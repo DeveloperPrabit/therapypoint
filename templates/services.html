@@ -1,0 +1,51 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Our Services</title>
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Custom Service Image Style -->
+  <style>
+    .service-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'header.html' %}
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4 text-danger">Our Services</h2>
+    <div class="row">
+      {% for service in services %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow p-3 text-center">
+          {% if service.image %}
+          <img src="{{ service.image.url }}" class="service-img mx-auto mb-3" alt="{{ service.title }}">
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title">{{ service.title }}</h5>
+            <p class="card-text">{{ service.description }}</p>
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center">No services available right now.</p>
+      {% endfor %}
+    </div>
+  </div>
+
+  {% include 'footer.html' %}
+
+</body>
+</html>

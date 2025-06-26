@@ -19,6 +19,17 @@ class Post(models.Model):
     def __str__(self):
         return str( self.postname)
     
+
+class Service(models.Model):
+    title = models.CharField(max_length=200)
+    description = models.TextField()
+    image = models.ImageField(upload_to="images/services", blank=True, null=True)
+
+    def __str__(self):
+        return self.title
+
+
+    
     
 class Comment(models.Model):
     content = models.CharField(max_length=200)
@@ -35,3 +46,17 @@ class Contact(models.Model):
     email = models.EmailField(max_length=600)
     subject = models.CharField(max_length=1000)
     message = models.CharField(max_length=10000, blank=True)
+
+class ContactSidebar(models.Model):
+    phone = models.CharField(max_length=20)
+    email = models.EmailField()
+    office1_label = models.CharField(max_length=100)
+    office1_address = models.TextField()
+    office2_label = models.CharField(max_length=100)
+    office2_address = models.TextField()
+    hours_weekdays = models.CharField(max_length=100)
+    hours_saturday = models.CharField(max_length=100)
+    hours_sunday = models.CharField(max_length=100)
+
+    def __str__(self):
+        return "Contact Sidebar Info"
