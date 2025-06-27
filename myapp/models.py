@@ -20,6 +20,18 @@ class Post(models.Model):
         return str( self.postname)
     
 
+class AboutSection(models.Model):
+    title = models.CharField(max_length=200)
+    subtitle = models.CharField(max_length=255, blank=True)
+    content = models.TextField()
+    image = models.ImageField(upload_to='about/', blank=True, null=True)
+    video_url = models.URLField(blank=True, null=True)  # Optional video link (YouTube or direct)
+    order = models.PositiveIntegerField(default=0)
+
+    def __str__(self):
+        return self.title
+
+
 class Service(models.Model):
     title = models.CharField(max_length=200)
     description = models.TextField()
@@ -60,3 +72,18 @@ class ContactSidebar(models.Model):
 
     def __str__(self):
         return "Contact Sidebar Info"
+
+#chatbot model
+class FAQ(models.Model):
+    question = models.CharField(max_length=500)
+    answer = models.TextField()
+
+    def __str__(self):
+        return self.question
+
+class SystemPrompt(models.Model):
+    prompt_text = models.TextField(help_text="Custom system instruction for the chatbot.")
+    last_updated = models.DateTimeField(auto_now=True)
+
+    def __str__(self):
+        return "System Prompt"

@@ -19,6 +19,13 @@ def index(request):
         'media_url': settings.MEDIA_URL
     })
 
+from django.shortcuts import render
+from .models import AboutSection
+
+def about_us(request):
+    sections = AboutSection.objects.all().order_by('order')
+    return render(request, 'about.html', {'sections': sections})
+
 
 def services(request):
     services = Service.objects.all()
@@ -208,3 +215,112 @@ def contact_us(request):
             context['message'] = f"Oops! Something went wrong: {str(e)}"
 
     return render(request, "contact.html", context)
+
+
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+from django.conf import settings
+from django.utils.timezone import make_aware
+from datetime import datetime, timedelta
+from .models import FAQ, SystemPrompt
+# from .tasks import place_missed_call  # 📌 Import Celery task
+
+import json
+
+user_sessions = {}
+
+@csrf_exempt
+def chatbot_api(request):
+    if request.method == 'POST':
+        data = json.loads(request.body)
+        message = data.get('message', '').strip()
+        session_id = request.session.session_key or request.session.save()
+
+        if session_id not in user_sessions:
+            user_sessions[session_id] = {'step': None}
+
+        session = user_sessions[session_id]
+
+        # Step 1: User initiates appointment
+        if "appointment" in message.lower() and session['step'] is None:
+            session['step'] = 'name'
+            return JsonResponse({'response': "Sure! Let's book your appointment. What's your full name?"})
+
+        # Step 2: Name
+        if session['step'] == 'name':
+            session['name'] = message.title()
+            session['step'] = 'email'
+            return JsonResponse({'response': f"Thanks {session['name']}! What's your email address?"})
+
+        # Step 3: Email
+        if session['step'] == 'email':
+            session['email'] = message
+            session['step'] = 'phone'
+            return JsonResponse({'response': "Got it. What's your phone number?"})
+
+        # Step 4: Phone
+        if session['step'] == 'phone':
+            session['phone'] = message
+            session['step'] = 'time'
+
+            time_options = ['10 AM', '11 AM', '12 PM', '1 PM', '2 PM', '3 PM', '4 PM', '5 PM']
+            buttons = "".join([
+                f"<button onclick=\"sendMessage('{t}')\" class='btn btn-outline-primary btn-sm m-1'>{t}</button>"
+                for t in time_options
+            ])
+            return JsonResponse({'response': "Choose your preferred time:<br>" + buttons})
+
+        # Step 5: Time
+        if session['step'] == 'time':
+            session['time'] = message
+            session['step'] = 'done'
+
+            # Send email
+            subject = "New Appointment Request"
+            body = f"""
+New Appointment Request:
+
+Name: {session['name']}
+Email: {session['email']}
+Phone: {session['phone']}
+Preferred Time: {session['time']}
+"""
+            send_mail(
+                subject,
+                body,
+                settings.DEFAULT_FROM_EMAIL,
+                ['prabitjoshi@gmail.com'],
+                fail_silently=False
+            )
+
+            # Schedule Twilio missed call 30 min before
+            # try:
+            #     # Parse "10 AM" to datetime
+            #     appointment_time = datetime.strptime(session['time'], '%I %p')
+            #     now = datetime.now()
+            #     appointment_datetime = datetime.combine(now.date(), appointment_time.time())
+            #     call_time = make_aware(appointment_datetime - timedelta(minutes=30))
+
+            #     phone_number = '+977' + session['phone'].lstrip('0')  # Change country code if needed
+
+            #     place_missed_call.apply_async(args=[phone_number], eta=call_time)
+
+            # except Exception as e:
+            #     print("❌ Failed to schedule missed call:", e)
+
+            # response = f"✅ Thank you, {session['name']}! Your appointment for {session['time']} has been received. We'll contact you shortly."
+            # user_sessions.pop(session_id)
+            # return JsonResponse({'response': response})
+
+        # Step 6: FAQ Matching
+        faq_match = FAQ.objects.filter(question__icontains=message).first()
+        if faq_match:
+            return JsonResponse({'response': faq_match.answer})
+
+        # Step 7: Default System Prompt
+        system_prompt = SystemPrompt.objects.last()
+        default_response = system_prompt.prompt_text if system_prompt else "Hi! You can say 'book an appointment' or ask a question about our services."
+        return JsonResponse({'response': default_response})
+
+    return JsonResponse({'response': "❌ Invalid request method."})

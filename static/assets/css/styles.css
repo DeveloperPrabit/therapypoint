@@ -7,3 +7,71 @@
 .blog-post img {
     height: 300px;
 }
+
+.about-us-container {
+  background-color: #fff0f3;
+  padding: 60px 20px;
+  font-family: 'Roboto', sans-serif;
+  color: #333;
+}
+
+.about-title {
+  font-size: 2.5rem;
+  font-weight: 700;
+  text-align: center;
+  margin-bottom: 30px;
+}
+
+.about-subheading {
+  text-align: center;
+  font-weight: 600;
+  color: #444;
+  max-width: 800px;
+  margin: 0 auto 20px auto;
+}
+
+.about-paragraph {
+  text-align: center;
+  max-width: 850px;
+  margin: 0 auto 40px auto;
+  color: #666;
+  line-height: 1.6;
+}
+
+.about-location-box {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
+  gap: 30px;
+  margin-top: 30px;
+}
+
+.about-location {
+  flex: 1 1 45%;
+  background: #fff;
+  padding: 20px 25px;
+  border-radius: 8px;
+  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+}
+
+.about-location h5 {
+  font-weight: 700;
+  margin-bottom: 10px;
+}
+
+.about-location ul {
+  padding-left: 18px;
+  margin-top: 10px;
+}
+
+.about-location ul li {
+  font-weight: 500;
+  color: #444;
+}
+
+.about-note {
+  text-align: center;
+  margin-top: 40px;
+  font-weight: 400;
+  color: #666;
+}

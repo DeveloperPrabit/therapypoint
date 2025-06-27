@@ -4,6 +4,7 @@ from django.urls import path
 urlpatterns = [
     path("",views.index,name="index"),
     path("blog",views.blog,name="blog"),
+    path('about/', views.about_us, name='about'),
     path("services", views.services, name="services"),
 
     path("signin",views.signin,name="signin"),
@@ -19,4 +20,5 @@ urlpatterns = [
     path("post/edit/<int:id>",views.editpost,name="editpost"),
     path("post/delete/<int:id>",views.deletepost,name="deletepost"),
     path("contact",views.contact_us,name="contact"),
+    path("chatbot-api/", views.chatbot_api, name="chatbot_api"),
 ]
