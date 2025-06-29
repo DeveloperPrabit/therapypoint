@@ -216,16 +216,15 @@ def contact_us(request):
 
     return render(request, "contact.html", context)
 
-
 from django.http import JsonResponse
 from django.views.decorators.csrf import csrf_exempt
 from django.core.mail import send_mail
 from django.conf import settings
 from django.utils.timezone import make_aware
 from datetime import datetime, timedelta
+from django_q.tasks import schedule
 from .models import FAQ, SystemPrompt
-# from .tasks import place_missed_call  # 📌 Import Celery task
-
+from .tasks import place_missed_call
 import json
 
 user_sessions = {}
@@ -242,24 +241,20 @@ def chatbot_api(request):
 
         session = user_sessions[session_id]
 
-        # Step 1: User initiates appointment
         if "appointment" in message.lower() and session['step'] is None:
             session['step'] = 'name'
             return JsonResponse({'response': "Sure! Let's book your appointment. What's your full name?"})
 
-        # Step 2: Name
         if session['step'] == 'name':
             session['name'] = message.title()
             session['step'] = 'email'
             return JsonResponse({'response': f"Thanks {session['name']}! What's your email address?"})
 
-        # Step 3: Email
         if session['step'] == 'email':
             session['email'] = message
             session['step'] = 'phone'
             return JsonResponse({'response': "Got it. What's your phone number?"})
 
-        # Step 4: Phone
         if session['step'] == 'phone':
             session['phone'] = message
             session['step'] = 'time'
@@ -271,12 +266,10 @@ def chatbot_api(request):
             ])
             return JsonResponse({'response': "Choose your preferred time:<br>" + buttons})
 
-        # Step 5: Time
         if session['step'] == 'time':
             session['time'] = message
             session['step'] = 'done'
 
-            # Send email
             subject = "New Appointment Request"
             body = f"""
 New Appointment Request:
@@ -294,33 +287,53 @@ Preferred Time: {session['time']}
                 fail_silently=False
             )
 
-            # Schedule Twilio missed call 30 min before
-            # try:
-            #     # Parse "10 AM" to datetime
-            #     appointment_time = datetime.strptime(session['time'], '%I %p')
-            #     now = datetime.now()
-            #     appointment_datetime = datetime.combine(now.date(), appointment_time.time())
-            #     call_time = make_aware(appointment_datetime - timedelta(minutes=30))
+            try:
+                appointment_time = datetime.strptime(session['time'], '%I %p')
+                now = datetime.now()
+                appointment_datetime = datetime.combine(now.date(), appointment_time.time())
+                aware_appointment = make_aware(appointment_datetime)
+                phone_number = '+977' + session['phone'].lstrip('0')
 
-            #     phone_number = '+977' + session['phone'].lstrip('0')  # Change country code if needed
+                # ✅ Schedule 1 hour before (Reminder)
+                schedule(
+                    'myapp.tasks.place_missed_call',
+                    phone_number,
+                    hook='myapp.tasks.log_result',
+                    next_run=aware_appointment - timedelta(hours=1),
+                    task_name=f"Reminder for {session['name']}"
+                )
 
-            #     place_missed_call.apply_async(args=[phone_number], eta=call_time)
+                # ✅ Schedule 30 min before (Main Missed Call)
+                schedule(
+                    'myapp.tasks.place_missed_call',
+                    phone_number,
+                    hook='myapp.tasks.log_result',
+                    next_run=aware_appointment - timedelta(minutes=30),
+                    task_name=f"Missed Call for {session['name']}"
+                )
 
-            # except Exception as e:
-            #     print("❌ Failed to schedule missed call:", e)
+                # ✅ Schedule 10 min after (Follow-up)
+                schedule(
+                    'myapp.tasks.place_missed_call',
+                    phone_number,
+                    hook='myapp.tasks.log_result',
+                    next_run=aware_appointment + timedelta(minutes=10),
+                    task_name=f"Follow-up Call for {session['name']}"
+                )
 
-            # response = f"✅ Thank you, {session['name']}! Your appointment for {session['time']} has been received. We'll contact you shortly."
-            # user_sessions.pop(session_id)
-            # return JsonResponse({'response': response})
+            except Exception as e:
+                print("❌ Scheduling failed:", e)
 
-        # Step 6: FAQ Matching
+            response = f"✅ Thank you, {session['name']}! Your appointment for {session['time']} has been received."
+            user_sessions.pop(session_id)
+            return JsonResponse({'response': response})
+
         faq_match = FAQ.objects.filter(question__icontains=message).first()
         if faq_match:
             return JsonResponse({'response': faq_match.answer})
 
-        # Step 7: Default System Prompt
         system_prompt = SystemPrompt.objects.last()
-        default_response = system_prompt.prompt_text if system_prompt else "Hi! You can say 'book an appointment' or ask a question about our services."
+        default_response = system_prompt.prompt_text if system_prompt else "Hi! You can say 'book an appointment' or ask a question."
         return JsonResponse({'response': default_response})
 
     return JsonResponse({'response': "❌ Invalid request method."})

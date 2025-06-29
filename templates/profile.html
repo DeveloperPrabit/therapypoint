@@ -204,13 +204,13 @@
                             </a>
                         </li>
                         <li class="nav-item">
-                            <a class="nav-link" href="{% url 'blog' %}">Blogs</a>
+                            <a class="nav-link" href="{% url 'blog' %}">News</a>
                         </li>
 
                         {% if user.is_authenticated %}
-                        <li class="nav-item">
+                        {% comment %} <li class="nav-item">
                             <a class="nav-link" href="{% url 'create' %}">Create</a>
-                        </li>
+                        </li> {% endcomment %}
                         <li class="nav-item">
                             <a class="nav-link" href="{% url 'profile' user.id %}">Profile</a>
                         </li>

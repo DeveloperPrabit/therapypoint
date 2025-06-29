@@ -31,6 +31,9 @@ SECRET_KEY = "django-insecure-s0eg9q5^i%wy4n5m78yvbpwkb3j3u)w8nx=pr&c6+ag8ltvs5t
 DEBUG = True
 
 ALLOWED_HOSTS = ['*']
+# CSRF_TRUSTED_ORIGINS = [
+#     "https://sports-pork-glucose-dx.trycloudflare.com",
+# ]
 
 
 # Application definition
@@ -42,7 +45,8 @@ INSTALLED_APPS = [
     "django.contrib.sessions",
     "django.contrib.messages",
     "django.contrib.staticfiles",
-    "myapp"
+    "myapp",
+    "django_q"
 ]
 
 MIDDLEWARE = [
@@ -99,17 +103,29 @@ AUTH_PASSWORD_VALIDATORS = [
     {"NAME": "django.contrib.auth.password_validation.NumericPasswordValidator",},
 ]
 
+Q_CLUSTER = {
+    'name': 'therapypoint',
+    'orm': 'default',
+    'retry': 360,     # ⏳ Retry delay in seconds (e.g., 6 minutes)
+    'timeout': 180,   # ⏱ Max runtime before considering task failed
+}
+
 
 # Internationalization
 # https://docs.djangoproject.com/en/4.2/topics/i18n/
 
 LANGUAGE_CODE = "en-us"
 
-TIME_ZONE = "UTC"
+# TIME_ZONE = "UTC"
 
+# USE_I18N = True
+
+# USE_TZ = True
+TIME_ZONE = 'Asia/Kathmandu'
+USE_TZ = True
 USE_I18N = True
 
-USE_TZ = True
+
 
 # Celery Configuration
 # CELERY_BROKER_URL = 'redis://localhost:6379/0'
