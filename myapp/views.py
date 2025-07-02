@@ -6,32 +6,51 @@ from django.contrib.auth.decorators import login_required
 from django.conf import settings
 from django.core.mail import EmailMessage
 from django.template.loader import render_to_string
+from django.http import JsonResponse
+from django.views.decorators.csrf import csrf_exempt
+from django.core.mail import send_mail
+from django.utils.timezone import make_aware
+from datetime import datetime, timedelta
+from django_q.tasks import schedule
+import json
 
-from .models import Post, Comment, Service, ContactSidebar
+from .models import (
+    Post, Comment, Service, ContactSidebar,
+    Video, AboutSection, FAQ, SystemPrompt
+)
+from .tasks import place_missed_call
 
+user_sessions = {}
 
+# ✅ Homepage View
 def index(request):
+    videos = Video.objects.all().order_by('-created_at')
+    posts = Post.objects.filter(user_id=request.user.id).order_by("-id") if request.user.is_authenticated else []
+    about_section = AboutSection.objects.order_by('order').first()
+    services = Service.objects.all()[:2]  # Limit to 2 services for homepage
+
     return render(request, "index.html", {
-        'posts': Post.objects.filter(user_id=request.user.id).order_by("-id"),
+        'videos': videos,
+        'posts': posts,
         'top_posts': Post.objects.all().order_by("-likes"),
         'recent_posts': Post.objects.all().order_by("-id"),
         'user': request.user,
-        'media_url': settings.MEDIA_URL
+        'media_url': settings.MEDIA_URL,
+        'about_section': about_section,
+        'home_services': services
     })
 
-from django.shortcuts import render
-from .models import AboutSection
-
+# ✅ About Page
 def about_us(request):
     sections = AboutSection.objects.all().order_by('order')
     return render(request, 'about.html', {'sections': sections})
 
-
+# ✅ Services Page
 def services(request):
     services = Service.objects.all()
     return render(request, "services.html", {"services": services})
 
-
+# ✅ Signup
 def signup(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -52,7 +71,7 @@ def signup(request):
         return redirect('signup')
     return render(request, "signup.html")
 
-
+# ✅ Signin
 def signin(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -66,12 +85,12 @@ def signin(request):
             return redirect("signin")
     return render(request, "signin.html")
 
-
+# ✅ Logout
 def logout(request):
     auth.logout(request)
     return redirect('index')
 
-
+# ✅ Blog View
 def blog(request):
     return render(request, "blog.html", {
         'posts': Post.objects.filter(user_id=request.user.id).order_by("-id"),
@@ -81,7 +100,7 @@ def blog(request):
         'media_url': settings.MEDIA_URL
     })
 
-
+# ✅ Create Post
 def create(request):
     if request.method == 'POST':
         try:
@@ -95,7 +114,7 @@ def create(request):
         return redirect('index')
     return render(request, "create.html")
 
-
+# ✅ Profile View
 def profile(request, id):
     return render(request, 'profile.html', {
         'user': User.objects.get(id=id),
@@ -103,7 +122,7 @@ def profile(request, id):
         'media_url': settings.MEDIA_URL,
     })
 
-
+# ✅ Profile Edit
 def profileedit(request, id):
     if request.method == 'POST':
         firstname = request.POST['firstname']
@@ -120,7 +139,7 @@ def profileedit(request, id):
         'user': User.objects.get(id=id),
     })
 
-
+# ✅ Increase Likes
 def increaselikes(request, id):
     if request.method == 'POST':
         post = Post.objects.get(id=id)
@@ -128,7 +147,7 @@ def increaselikes(request, id):
         post.save()
     return redirect("index")
 
-
+# ✅ Single Post Details
 def post(request, id):
     post = Post.objects.get(id=id)
     comments = Comment.objects.filter(post_id=post.id)
@@ -141,21 +160,21 @@ def post(request, id):
         'total_comments': len(comments)
     })
 
-
+# ✅ Save Comment
 def savecomment(request, id):
     if request.method == 'POST':
         content = request.POST['message']
         Comment(post_id=id, user_id=request.user.id, content=content).save()
     return redirect("index")
 
-
+# ✅ Delete Comment
 def deletecomment(request, id):
     comment = Comment.objects.get(id=id)
     post_id = comment.post.id
     comment.delete()
     return post(request, post_id)
 
-
+# ✅ Edit Post
 def editpost(request, id):
     post = Post.objects.get(id=id)
     if request.method == 'POST':
@@ -169,12 +188,12 @@ def editpost(request, id):
         return profile(request, request.user.id)
     return render(request, "postedit.html", {'post': post})
 
-
+# ✅ Delete Post
 def deletepost(request, id):
     Post.objects.get(id=id).delete()
     return profile(request, request.user.id)
 
-
+# ✅ Contact Us Page + Email Sending
 def contact_us(request):
     context = {}
     sidebar = ContactSidebar.objects.first()
@@ -216,19 +235,7 @@ def contact_us(request):
 
     return render(request, "contact.html", context)
 
-from django.http import JsonResponse
-from django.views.decorators.csrf import csrf_exempt
-from django.core.mail import send_mail
-from django.conf import settings
-from django.utils.timezone import make_aware
-from datetime import datetime, timedelta
-from django_q.tasks import schedule
-from .models import FAQ, SystemPrompt
-from .tasks import place_missed_call
-import json
-
-user_sessions = {}
-
+# ✅ Chatbot API View
 @csrf_exempt
 def chatbot_api(request):
     if request.method == 'POST':
@@ -294,33 +301,15 @@ Preferred Time: {session['time']}
                 aware_appointment = make_aware(appointment_datetime)
                 phone_number = '+977' + session['phone'].lstrip('0')
 
-                # ✅ Schedule 1 hour before (Reminder)
-                schedule(
-                    'myapp.tasks.place_missed_call',
-                    phone_number,
-                    hook='myapp.tasks.log_result',
-                    next_run=aware_appointment - timedelta(hours=1),
-                    task_name=f"Reminder for {session['name']}"
-                )
-
-                # ✅ Schedule 30 min before (Main Missed Call)
-                schedule(
-                    'myapp.tasks.place_missed_call',
-                    phone_number,
-                    hook='myapp.tasks.log_result',
-                    next_run=aware_appointment - timedelta(minutes=30),
-                    task_name=f"Missed Call for {session['name']}"
-                )
-
-                # ✅ Schedule 10 min after (Follow-up)
-                schedule(
-                    'myapp.tasks.place_missed_call',
-                    phone_number,
-                    hook='myapp.tasks.log_result',
-                    next_run=aware_appointment + timedelta(minutes=10),
-                    task_name=f"Follow-up Call for {session['name']}"
-                )
-
+                schedule('myapp.tasks.place_missed_call', phone_number, hook='myapp.tasks.log_result',
+                         next_run=aware_appointment - timedelta(hours=1),
+                         task_name=f"Reminder for {session['name']}")
+                schedule('myapp.tasks.place_missed_call', phone_number, hook='myapp.tasks.log_result',
+                         next_run=aware_appointment - timedelta(minutes=30),
+                         task_name=f"Missed Call for {session['name']}")
+                schedule('myapp.tasks.place_missed_call', phone_number, hook='myapp.tasks.log_result',
+                         next_run=aware_appointment + timedelta(minutes=10),
+                         task_name=f"Follow-up Call for {session['name']}")
             except Exception as e:
                 print("❌ Scheduling failed:", e)
 

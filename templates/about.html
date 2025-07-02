@@ -3,134 +3,115 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>About Us - Therapy Point</title>
-  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap + Additional CSS -->
+  <link href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}" rel="stylesheet">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link rel="stylesheet" href="{% static 'assets/css/fontawesome.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/templatemo-stand-blog.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
   <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
 
   <style>
-    .about-us-container {
-  background-color: #fff0f3;
-  padding: 60px 20px;
-  font-family: 'Roboto', sans-serif;
-  color: #333;
-}
+    body {
+      font-family: 'Roboto', sans-serif;
+    }
 
-.about-title {
-  font-size: 2.5rem;
-  font-weight: 700;
-  text-align: center;
-  margin-bottom: 30px;
-}
+    .about-section {
+      background-color: #fff0f3;
+      padding: 60px 20px;
+      color: #333;
+    }
 
-.about-subheading {
-  text-align: center;
-  font-weight: 600;
-  color: #444;
-  max-width: 800px;
-  margin: 0 auto 20px auto;
-}
+    .about-title {
+      font-size: 2.5rem;
+      font-weight: 700;
+      text-align: center;
+      margin-bottom: 40px;
+    }
 
-.about-paragraph {
-  text-align: center;
-  max-width: 850px;
-  margin: 0 auto 40px auto;
-  color: #666;
-  line-height: 1.6;
-}
+    .about-box {
+      background-color: #fff;
+      padding: 40px;
+      border-radius: 12px;
+      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
+      margin-bottom: 40px;
+    }
 
-.about-location-box {
-  display: flex;
-  justify-content: space-between;
-  flex-wrap: wrap;
-  gap: 30px;
-  margin-top: 30px;
-}
+    .about-img, .about-video {
+      width: 100%;
+      border-radius: 10px;
+      margin-bottom: 20px;
+    }
 
-.about-location {
-  flex: 1 1 45%;
-  background: #fff;
-  padding: 20px 25px;
-  border-radius: 8px;
-  box-shadow: 0 5px 15px rgba(0,0,0,0.05);
-}
+    .about-subtitle {
+      font-weight: 600;
+      color: #888;
+      font-size: 0.95rem;
+      margin-bottom: 10px;
+    }
 
-.about-location h5 {
-  font-weight: 700;
-  margin-bottom: 10px;
-}
-
-.about-location ul {
-  padding-left: 18px;
-  margin-top: 10px;
-}
-
-.about-location ul li {
-  font-weight: 500;
-  color: #444;
-}
-
-.about-note {
-  text-align: center;
-  margin-top: 40px;
-  font-weight: 400;
-  color: #666;
-}
-.about-img, .about-video {
-  width: 100%;
-  border-radius: 10px;
-  margin-bottom: 15px;
-}
-.about-box {
-  background-color: #fff;
-  padding: 20px;
-  border-radius: 12px;
-  box-shadow: 0 4px 20px rgba(0,0,0,0.05);
-  margin-bottom: 30px;
-}
-.about-subtitle {
-  font-weight: 600;
-  color: #888;
-  font-size: 0.95rem;
-  margin-bottom: 10px;
-}
-
-
-    </style>
+    @media (max-width: 768px) {
+      .about-box {
+        padding: 20px;
+      }
+    }
+  </style>
 </head>
+
 <body>
-{% include 'header.html' %}
+  {% include 'header.html' %}
 
-<section class="about-section">
-  <div class="container">
-    <h2 class="about-title animate__animated animate__fadeInDown">About Us</h2>
+  <section class="about-section">
+    <div class="container">
+      <h2 class="about-title animate__animated animate__fadeInDown">About Us</h2>
+      <div class="row">
+        {% for section in sections %}
+        <div class="col-md-10 offset-md-1">
+          <div class="about-box animate__animated animate__fadeInUp">
+            {% if section.image %}
+              <img src="{{ section.image.url }}" class="about-img" alt="{{ section.title }}">
+            {% elif section.video_url %}
+              <video class="about-video" controls>
+                <source src="{{ section.video_url }}" type="video/mp4">
+                Your browser does not support the video tag.
+              </video>
+            {% endif %}
 
-    <div class="row">
-      {% for section in sections %}
-      <div class="col-md-6">
-        <div class="about-box animate__animated animate__fadeInUp">
-          {% if section.image %}
-            <img src="{{ section.image.url }}" class="about-img" alt="{{ section.title }}">
-          {% elif section.video_url %}
-            <video class="about-video" controls>
-              <source src="{{ section.video_url }}" type="video/mp4">
-              Your browser does not support the video tag.
-            </video>
-          {% endif %}
-
-          <h4>{{ section.title }}</h4>
-          {% if section.subtitle %}
-            <p class="about-subtitle">{{ section.subtitle }}</p>
-          {% endif %}
-          <p>{{ section.content|linebreaks }}</p>
+            <h4>{{ section.title }}</h4>
+            {% if section.subtitle %}
+              <p class="about-subtitle">{{ section.subtitle }}</p>
+            {% endif %}
+            <div>{{ section.content|safe }}</div>
+          </div>
         </div>
+        {% empty %}
+          <p class="text-center">No about section content found.</p>
+        {% endfor %}
       </div>
-      {% endfor %}
     </div>
-  </div>
-</section>
+  </section>
 
-{% include 'footer.html' %}
+  {% include 'footer.html' %}
 
-<script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <!-- Scripts -->
+  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+  <script src="https://unpkg.com/aos@next/dist/aos.js"></script>
+  <script>
+    AOS.init();
+  </script>
+  <script src="{% static 'assets/js/custom.js' %}"></script>
+  <script src="{% static 'assets/js/owl.js' %}"></script>
+  <script src="{% static 'assets/js/slick.js' %}"></script>
+  <script src="{% static 'assets/js/isotope.js' %}"></script>
+  <script src="{% static 'assets/js/accordions.js' %}"></script>
 </body>
 </html>

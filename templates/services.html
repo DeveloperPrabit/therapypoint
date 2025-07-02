@@ -3,13 +3,28 @@
 <html lang="en">
 <head>
   <meta charset="UTF-8">
-  <title>Our Services</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Our Services - Therapy Point</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap" rel="stylesheet">
 
   <!-- Bootstrap CSS -->
   <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+
+  <!-- FontAwesome -->
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
 
-  <!-- Custom Service Image Style -->
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="{% static 'assets/css/fontawesome.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/templatemo-stand-blog.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+
+  <!-- Animate CSS (if you want animation) -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
   <style>
     .service-img {
       width: 100%;
@@ -18,6 +33,14 @@
       border-radius: 10px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
     }
+    .card-title {
+      font-weight: 600;
+      color: #444;
+    }
+    .card-text {
+      color: #666;
+      font-size: 0.95rem;
+    }
   </style>
 </head>
 <body>
@@ -25,11 +48,11 @@
   {% include 'header.html' %}
 
   <div class="container mt-5">
-    <h2 class="text-center mb-4 text-danger">Our Services</h2>
+    <h2 class="text-center mb-4 text-danger animate__animated animate__fadeInDown">Our Services</h2>
     <div class="row">
       {% for service in services %}
       <div class="col-md-4 mb-4">
-        <div class="card h-100 shadow p-3 text-center">
+        <div class="card h-100 shadow text-center animate__animated animate__fadeInUp">
           {% if service.image %}
           <img src="{{ service.image.url }}" class="service-img mx-auto mb-3" alt="{{ service.title }}">
           {% endif %}
@@ -46,6 +69,28 @@
   </div>
 
   {% include 'footer.html' %}
+
+  <!-- Scripts -->
+  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+
+  <!-- Preloader Hide Logic -->
+  <script>
+    window.addEventListener('load', function () {
+      const loader = document.querySelector('.preloader');
+      if (loader) {
+        loader.style.display = 'none';
+      }
+    });
+  </script>
+
+  <!-- Optional Plugins -->
+  <script src="{% static 'assets/js/custom.js' %}"></script>
+  <script src="{% static 'assets/js/owl.js' %}"></script>
+  <script src="{% static 'assets/js/slick.js' %}"></script>
+  <script src="{% static 'assets/js/isotope.js' %}"></script>
+  <script src="{% static 'assets/js/accordions.js' %}"></script>
 
 </body>
 </html>

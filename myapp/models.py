@@ -6,6 +6,18 @@ now =  datetime.now()
 time = now.strftime("%d %B %Y")
 # Create your models here.
 
+# Models for the TherapyPoint homepage video
+from django.db import models
+
+class Video(models.Model):
+    title = models.CharField(max_length=200)
+    video_file = models.FileField(upload_to='videos/', max_length=255)  # <- increased from 100 to 255
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.title
+
+
 
 class Post(models.Model):
     postname = models.CharField(max_length=600)
@@ -19,17 +31,24 @@ class Post(models.Model):
     def __str__(self):
         return str( self.postname)
     
+# Import CKEditor rich text field
+# Make sure you have installed django-ckeditor in your Django project
+from django_ckeditor_5.fields import CKEditor5Field  # ✅ CKEditor 5 import
 
 class AboutSection(models.Model):
     title = models.CharField(max_length=200)
     subtitle = models.CharField(max_length=255, blank=True)
-    content = models.TextField()
+
+    # ✅ Use CKEditor5Field instead of RichTextField
+    content = CKEditor5Field('Content', config_name='default')
+
     image = models.ImageField(upload_to='about/', blank=True, null=True)
-    video_url = models.URLField(blank=True, null=True)  # Optional video link (YouTube or direct)
+    video_url = models.URLField(blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
 
     def __str__(self):
         return self.title
+
 
 
 class Service(models.Model):

@@ -46,8 +46,36 @@ INSTALLED_APPS = [
     "django.contrib.messages",
     "django.contrib.staticfiles",
     "myapp",
+    'django_ckeditor_5',
     "django_q"
 ]
+CKEDITOR_5_CONFIGS = {
+    'default': {
+        'toolbar': [
+            'undo', 'redo', '|',
+            'heading', '|',
+            'bold', 'italic', 'underline', 'strikethrough', '|',
+            'fontColor', 'fontBackgroundColor', 'fontSize', 'fontFamily', '|',
+            'alignment', '|',
+            'bulletedList', 'numberedList', 'todoList', '|',
+            'outdent', 'indent', '|',
+            'link', 'imageUpload', 'mediaEmbed', 'blockQuote', 'insertTable', 'horizontalLine', 'codeBlock', '|',
+            'highlight', 'removeFormat', 'sourceEditing'
+        ],
+        'language': 'en',
+        'image': {
+            'toolbar': [
+                'imageTextAlternative', 'imageStyle:full', 'imageStyle:side'
+            ]
+        },
+        'table': {
+            'contentToolbar': [
+                'tableColumn', 'tableRow', 'mergeTableCells'
+            ]
+        },
+    }
+}
+
 
 MIDDLEWARE = [
     "django.middleware.security.SecurityMiddleware",
@@ -144,6 +172,7 @@ STATIC_ROOT = os.path.join(BASE_DIR, 'staticfiles')
 MEDIA_URL = "media/"
 MEDIA_ROOT = MEDIA_DIR
 
+CKEDITOR_UPLOAD_PATH = 'uploads/'
 
 # EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
 # EMAIL_HOST = os.getenv('EMAIL_HOST')
