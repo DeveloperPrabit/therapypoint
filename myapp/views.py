@@ -91,14 +91,25 @@ def logout(request):
     return redirect('index')
 
 # ✅ Blog View
+from .models import BlogMedia
+import mimetypes
+
 def blog(request):
+    media_files = BlogMedia.objects.all().order_by('-created_at')
+    for media in media_files:
+        mime_type, _ = mimetypes.guess_type(media.media_file.url)
+        media.is_video = mime_type and mime_type.startswith("video")
+
     return render(request, "blog.html", {
+        'media_files': media_files,
         'posts': Post.objects.filter(user_id=request.user.id).order_by("-id"),
         'top_posts': Post.objects.all().order_by("-likes"),
         'recent_posts': Post.objects.all().order_by("-id"),
         'user': request.user,
         'media_url': settings.MEDIA_URL
     })
+
+
 
 # ✅ Create Post
 def create(request):
