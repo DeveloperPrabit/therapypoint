@@ -19,7 +19,7 @@ from .models import (
     Video, AboutSection, FAQ, SystemPrompt,
     CarouselSlide, AdditionalContent, FundingOption
 )
-from .tasks import place_missed_call
+
 
 user_sessions = {}
 
