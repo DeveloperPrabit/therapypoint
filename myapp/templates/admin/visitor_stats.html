@@ -1,0 +1,31 @@
+{% extends "admin/change_list.html" %}
+
+{% block content %}
+<div style="margin: 20px 0;">
+    <strong>Total Visitors:</strong> {{ total_visitors }} |
+    <strong>Organic:</strong> {{ organic }} |
+    <strong>Inorganic:</strong> {{ inorganic }}
+</div>
+
+<canvas id="visitorChart" width="600" height="200"></canvas>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<script>
+    const ctx = document.getElementById('visitorChart').getContext('2d');
+    const visitorChart = new Chart(ctx, {
+        type: 'line',
+        data: {
+            labels: {{ chart_labels|safe }},
+            datasets: [{
+                label: 'Visitors Per Day',
+                data: {{ chart_data|safe }},
+                fill: true,
+                backgroundColor: 'rgba(75,192,192,0.2)',
+                borderColor: 'rgba(75,192,192,1)',
+                tension: 0.1
+            }]
+        }
+    });
+</script>
+
+{{ block.super }}
+{% endblock %}

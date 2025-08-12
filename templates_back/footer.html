@@ -1,0 +1,141 @@
+{% load static %}
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
+
+<style>
+  footer {
+    background-color: #1c2b3a;
+    color: #e0e0e0;
+    padding: 60px 20px 30px;
+    font-family: 'Segoe UI', sans-serif;
+  }
+
+  .footer-container {
+    max-width: 1200px;
+    margin: auto;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+    gap: 40px;
+  }
+
+  .footer-section h4 {
+    color: #ffffff;
+    margin-bottom: 15px;
+    font-size: 18px;
+    font-weight: 600;
+  }
+
+  .footer-section ul {
+    list-style: none;
+    padding: 0;
+  }
+
+  .footer-section ul li {
+    margin-bottom: 10px;
+  }
+
+  .footer-section ul li a {
+    color: #c0c0c0;
+    text-decoration: none;
+    transition: color 0.3s ease;
+  }
+
+  .footer-section ul li a:hover {
+    color: #ffcc00;
+  }
+
+  .social-icons a {
+    display: inline-block;
+    margin-right: 10px;
+    color: white;
+    font-size: 22px;
+    transition: transform 0.3s ease, color 0.3s ease;
+  }
+
+  .social-icons a:hover {
+    color: #ffcc00;
+    transform: scale(1.2);
+  }
+
+  .footer-bottom {
+    text-align: center;
+    margin-top: 40px;
+    font-size: 14px;
+    color: #aaa;
+  }
+
+  .footer-bottom a {
+    color: #aaa;
+    margin: 0 8px;
+    text-decoration: none;
+  }
+
+  .footer-bottom a:hover {
+    color: #ffcc00;
+  }
+
+  .child-safe-box {
+    display: inline-block;
+    background: #ffffff;
+    color: #1c2b3a;
+    padding: 12px 20px;
+    border-radius: 50px;
+    margin-top: 10px;
+    font-weight: bold;
+    text-decoration: none;
+    transition: all 0.3s ease;
+  }
+
+  .child-safe-box:hover {
+    background: #ffcc00;
+    color: #1c2b3a;
+  }
+</style>
+
+{% if footer %}
+<footer>
+  <div class="footer-container">
+    <!-- Connect With Us -->
+    <div class="footer-section">
+      <h4>Connect With Us</h4>
+      <div class="social-icons">
+        {% if footer.instagram %}<a href="{{ footer.instagram }}"><i class="fab fa-instagram"></i></a>{% endif %}
+        {% if footer.facebook %}<a href="{{ footer.facebook }}"><i class="fab fa-facebook-f"></i></a>{% endif %}
+        {% if footer.youtube %}<a href="{{ footer.youtube }}"><i class="fab fa-youtube"></i></a>{% endif %}
+        {% if footer.linkedin %}<a href="{{ footer.linkedin }}"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+      </div>
+      <p style="margin-top: 15px;">{{ footer.organization_name }}<br>{{ footer.abn }}</p>
+      <p style="font-size: 13px;">{{ footer.donation_note }}</p>
+    </div>
+
+    <!-- Contact Us -->
+    <div class="footer-section">
+      <h4>Contact Us</h4>
+      <ul>
+        <li><a href="tel:1300003900">1300 003 900</a></li>
+        <li><a href="mailto:info@example.com">Email Us</a></li>
+        <li><a href="#">Service Enquiry</a></li>
+        <li><a href="#">NDIS Enquiry</a></li>
+      </ul>
+    </div>
+
+    <!-- Child Safe -->
+    <div class="footer-section">
+      <h4>Child Safety</h4>
+      <p>{{ footer.child_safe_message }}</p>
+      <a class="child-safe-box" href="{{ footer.child_safe_link }}">
+        {{ footer.child_safe_link_text }} <i class="fas fa-arrow-right"></i>
+      </a>
+    </div>
+  </div>
+
+  <div class="footer-bottom mt-4">
+    <p>
+      {% for label, url in footer.get_bottom_links %}
+        <a href="{{ url }}">{{ label }}</a>{% if not forloop.last %} | {% endif %}
+      {% endfor %}
+    </p>
+  </div>
+</footer>
+{% else %}
+<p style="text-align: center; color: red;">No footer settings found.</p>
+{% endif %}

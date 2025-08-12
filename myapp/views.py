@@ -1,4 +1,4 @@
-from django.shortcuts import render, redirect
+from django.shortcuts import render, redirect, get_object_or_404
 from django.contrib.auth.models import User, auth
 from django.contrib.auth import authenticate
 from django.contrib import messages
@@ -16,7 +16,8 @@ import json
 
 from .models import (
     Post, Comment, Service, ContactSidebar,
-    Video, AboutSection, FAQ, SystemPrompt
+    Video, AboutSection, FAQ, SystemPrompt,
+    CarouselSlide, AdditionalContent, FundingOption
 )
 from .tasks import place_missed_call
 
@@ -28,6 +29,9 @@ def index(request):
     posts = Post.objects.filter(user_id=request.user.id).order_by("-id") if request.user.is_authenticated else []
     about_section = AboutSection.objects.order_by('order').first()
     services = Service.objects.all()[:2]  # Limit to 2 services for homepage
+    carousel_slides = CarouselSlide.objects.filter(is_active=True).prefetch_related('images')
+    additional_content = AdditionalContent.objects.all()
+    funding_options = FundingOption.objects.all().prefetch_related('images')
 
     return render(request, "index.html", {
         'videos': videos,
@@ -37,7 +41,10 @@ def index(request):
         'user': request.user,
         'media_url': settings.MEDIA_URL,
         'about_section': about_section,
-        'home_services': services
+        'home_services': services,
+        'carousel_slides': carousel_slides,
+        'additional_content': additional_content,
+        'funding_options': funding_options
     })
 
 # ✅ About Page
@@ -45,10 +52,76 @@ def about_us(request):
     sections = AboutSection.objects.all().order_by('order')
     return render(request, 'about.html', {'sections': sections})
 
+def home(request):
+    carousel_slides = CarouselSlide.objects.filter(is_active=True).prefetch_related('images')
+    return render(request, 'index.html', {
+        'carousel_slides': carousel_slides,
+    })
+
 # ✅ Services Page
 def services(request):
-    services = Service.objects.all()
-    return render(request, "services.html", {"services": services})
+    services = Service.objects.all()[:6]  # Limit to 6 services for display
+    return render(request, "services.html", {
+        "services": services,
+        "show_view_all": Service.objects.count() > 6  # Show "View All" if more than 6 services
+    })
+
+# ✅ All Services Page
+def services_all(request):
+    services = Service.objects.all()  # No limit, show all services
+    return render(request, "services_all.html", {
+        "services": services
+    })
+
+# ✅ Service Detail View
+def service_detail(request, id):
+    service = Service.objects.get(id=id)
+    return render(request, "service_detail.html", {
+        "service": service,
+        "media_url": settings.MEDIA_URL
+    })
+
+# ✅ Create Service (Admin Only)
+@login_required
+def create_service(request):
+    if not request.user.is_staff:  # Restrict to admins
+        messages.error(request, "You do not have permission to create services.")
+        return redirect('services')
+    if request.method == 'POST':
+        title = request.POST['title']
+        description = request.POST['description']
+        image = request.FILES.get('image')
+        Service.objects.create(title=title, description=description, image=image)
+        messages.success(request, "Service created successfully.")
+        return redirect('services')
+    return render(request, "create_service.html")
+
+# ✅ Edit Service (Admin Only)
+@login_required
+def edit_service(request, id):
+    if not request.user.is_staff:
+        messages.error(request, "You do not have permission to edit services.")
+        return redirect('services')
+    service = Service.objects.get(id=id)
+    if request.method == 'POST':
+        service.title = request.POST['title']
+        service.description = request.POST['description']
+        if request.FILES.get('image'):
+            service.image = request.FILES['image']
+        service.save()
+        messages.success(request, "Service updated successfully.")
+        return redirect('services')
+    return render(request, "edit_service.html", {'service': service})
+
+# ✅ Delete Service (Admin Only)
+@login_required
+def delete_service(request, id):
+    if not request.user.is_staff:
+        messages.error(request, "You do not have permission to delete services.")
+        return redirect('services')
+    Service.objects.get(id=id).delete()  # Fixed: Use direct delete method
+    messages.success(request, "Service deleted successfully.")
+    return redirect('services')
 
 # ✅ Signup
 def signup(request):
@@ -91,8 +164,19 @@ def logout(request):
     return redirect('index')
 
 # ✅ Blog View
+from .models import BlogMedia
+import mimetypes
+
 def blog(request):
+    media_files = BlogMedia.objects.all().order_by('-created_at')
+    for media in media_files:
+        # Use file path for accurate MIME type detection
+        file_path = media.media_file.path
+        mime_type, _ = mimetypes.guess_type(file_path) or ('', '')
+        media.is_video = mime_type.startswith("video/")
+
     return render(request, "blog.html", {
+        'media_files': media_files,
         'posts': Post.objects.filter(user_id=request.user.id).order_by("-id"),
         'top_posts': Post.objects.all().order_by("-likes"),
         'recent_posts': Post.objects.all().order_by("-id"),
@@ -194,9 +278,12 @@ def deletepost(request, id):
     return profile(request, request.user.id)
 
 # ✅ Contact Us Page + Email Sending
+from .models import ContactSidebar
+
 def contact_us(request):
     context = {}
     sidebar = ContactSidebar.objects.first()
+
     context['sidebar'] = sidebar
 
     if request.method == 'POST':
@@ -234,6 +321,21 @@ def contact_us(request):
             context['message'] = f"Oops! Something went wrong: {str(e)}"
 
     return render(request, "contact.html", context)
+
+# ✅ Custom 404 View
+def custom_404_view(request, exception):
+    return render(request, '404.html', status=404)
+
+# ✅ Footer View
+from .models import Footer
+def footer_view(request):
+    footer = Footer.objects.last()
+    therapy_methods = TherapyMethod.objects.order_by('order')
+    return render(request, 'footer.html', {
+        'footer': footer,
+        'therapy_methods': therapy_methods,
+    })
+
 
 # ✅ Chatbot API View
 @csrf_exempt
@@ -326,3 +428,30 @@ Preferred Time: {session['time']}
         return JsonResponse({'response': default_response})
 
     return JsonResponse({'response': "❌ Invalid request method."})
+
+    from django.shortcuts import render, get_object_or_404
+from .models import FundingOptionPage
+
+def funding_option_view(request):
+    # Get the first FundingOptionPage or 404
+    funding = get_object_or_404(FundingOptionPage)
+    return render(request, 'funding_option.html', {'funding': funding})
+
+# ✅ Therapy Methods View
+from .models import TherapyMethod
+
+# List all therapy methods (optional page)
+def therapy_methods_list(request):
+    therapy_methods = TherapyMethod.objects.all()
+    return render(request, 'therapymethods_list.html', {
+        'therapy_methods': therapy_methods,
+        'media_url': settings.MEDIA_URL
+    })
+
+# Detail page for a single therapy method
+def therapy_method_detail(request, pk):
+    therapy = get_object_or_404(TherapyMethod, pk=pk)
+    return render(request, 'therapymethods.html', {
+        'therapy': therapy,
+        'media_url': settings.MEDIA_URL
+    })

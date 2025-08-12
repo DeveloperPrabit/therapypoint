@@ -1,0 +1,52 @@
+<style>
+  .custom-footer {
+    padding: 40px 0;
+    background: #f9f9f9;
+    text-align: center;
+    color: #3a2951;
+    font-family: Arial, sans-serif;
+  }
+
+  .custom-footer h5 {
+    font-weight: bold;
+    margin-bottom: 15px;
+  }
+
+  .custom-footer a {
+    text-decoration: underline;
+    color: #3a2951;
+  }
+
+  .custom-footer a:hover {
+    color: #5a1ea1;
+  }
+</style>
+
+{% if contact_footer %}
+<div class="custom-footer">
+  <div class="container">
+    <div class="row gy-4 justify-content-center">
+      <div class="col-md-3">
+        <h5>{{ contact_footer.support_heading }}</h5>
+        <a href="{{ contact_footer.support_link }}">{{ contact_footer.support_text }}</a>
+      </div>
+      <div class="col-md-3">
+        <h5>{{ contact_footer.reward_heading }}</h5>
+        <a href="{{ contact_footer.reward_link }}">{{ contact_footer.reward_text }}</a>
+      </div>
+      <div class="col-md-3">
+        <h5>{{ contact_footer.feedback_heading }}</h5>
+        <a href="{{ contact_footer.feedback_link }}">{{ contact_footer.feedback_text }}</a>
+      </div>
+      <div class="col-md-3">
+        <h5>{{ contact_footer.contact_heading }}</h5>
+        <a href="{{ contact_footer.contact_link }}">{{ contact_footer.contact_text }}</a>
+      </div>
+    </div>
+  </div>
+</div>
+{% else %}
+<div class="custom-footer">
+  <p style="color: red;">Contact Footer content not available.</p>
+</div>
+{% endif %}

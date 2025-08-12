@@ -1,0 +1,45 @@
+{%load static%}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>{% block title %}Admin Panel{% endblock %}</title>
+
+    <!-- Static CSS -->
+    <link rel="stylesheet" href="{% static 'css/sadmin.css' %}">
+    
+    <!-- Custom CSS (from DB) -->
+    <style>
+        {{ custom_css|default:''|safe }}
+    </style>
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Sidebar / Header -->
+    <header>
+        <h1>Admin Dashboard</h1>
+        <nav>
+            <a href="{% url 'index' %}">Home</a> |
+            <a href="{% url 'logout' %}">Logout</a>
+        </nav>
+    </header>
+
+    <!-- Main Content Area -->
+    <main>
+        {% block content %}
+        <!-- Page-specific content goes here -->
+        {% endblock %}
+    </main>
+
+    <!-- Static JS -->
+    <script src="{% static 'js/sadmin.js' %}"></script>
+
+    <!-- Custom JS (from DB) -->
+    <script>
+        {{ custom_js|default:''|safe }}
+    </script>
+
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

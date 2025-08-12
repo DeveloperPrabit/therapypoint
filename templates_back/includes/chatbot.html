@@ -1,0 +1,56 @@
+<div id="chatbot" class="chatbot-container shadow">
+  <div class="chat-header bg-primary text-white p-2">
+    Ask Me Anything <span style="float:right;" onclick="toggleChat()">✖</span>
+  </div>
+  <div class="chat-body" id="chat-messages" style="height: 300px; overflow-y: scroll; padding: 10px;"></div>
+  <div class="chat-footer p-2">
+    <input type="text" id="user-input" placeholder="Type a question..." class="form-control" onkeypress="if(event.key==='Enter'){sendMessage();}">
+  </div>
+</div>
+
+<style>
+.chatbot-container {
+  width: 300px;
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  border-radius: 10px;
+  background: white;
+  display: none;
+  z-index: 9999;
+}
+</style>
+
+<script>
+function toggleChat() {
+  const bot = document.getElementById('chatbot');
+  bot.style.display = bot.style.display === 'block' ? 'none' : 'block';
+}
+
+function sendMessage(message = null) {
+  const input = document.getElementById('user-input');
+  const chatBox = document.getElementById('chat-messages');
+  let msg = message || input.value;
+  if (!msg.trim()) return;
+
+  chatBox.innerHTML += `<div><b>You:</b> ${msg}</div>`;
+  input.value = '';
+
+  fetch("{% url 'chatbot_api' %}", {
+    method: "POST",
+    headers: {
+      'Content-Type': 'application/json',
+      'X-CSRFToken': '{{ csrf_token }}'
+    },
+    body: JSON.stringify({ message: msg })
+  })
+  .then(response => response.json())
+  .then(data => {
+    chatBox.innerHTML += `<div><b>Bot:</b> ${data.response}</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
+  });
+}
+</script>
+
+
+<button onclick="toggleChat()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;" class="btn btn-primary">💬 Chat</button>

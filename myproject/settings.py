@@ -63,6 +63,17 @@ CKEDITOR_5_CONFIGS = {
             'highlight', 'removeFormat', 'sourceEditing'
         ],
         'language': 'en',
+        'fontSize': {
+            'options': [
+                '8px', '10px', '12px', '14px', '16px',
+                '18px', '20px', '24px', '28px', '32px',
+                '36px', '40px', '48px', '60px', '72px', '96px'
+            ],
+            'supportAllValues': True  # Optional: allow entering any size manually
+        },
+        'fontFamily': {
+            'supportAllValues': True
+        },
         'image': {
             'toolbar': [
                 'imageTextAlternative', 'imageStyle:full', 'imageStyle:side'
@@ -73,8 +84,11 @@ CKEDITOR_5_CONFIGS = {
                 'tableColumn', 'tableRow', 'mergeTableCells'
             ]
         },
+        'extraPlugins': ['ImageResize'],
+        'allowedContent': True
     }
 }
+
 
 
 MIDDLEWARE = [
@@ -85,6 +99,7 @@ MIDDLEWARE = [
     "django.contrib.auth.middleware.AuthenticationMiddleware",
     "django.contrib.messages.middleware.MessageMiddleware",
     "django.middleware.clickjacking.XFrameOptionsMiddleware",
+    'myapp.middleware.VisitorTrackingMiddleware',
 ]
 
 ROOT_URLCONF = "myproject.urls"
@@ -100,6 +115,7 @@ TEMPLATES = [
                 "django.template.context_processors.request",
                 "django.contrib.auth.context_processors.auth",
                 "django.contrib.messages.context_processors.messages",
+                'myapp.context_processors.footer_context',
             ],
         },
     },

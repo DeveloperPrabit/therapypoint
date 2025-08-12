@@ -1,0 +1,27 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <style>
+    body { font-family: Arial, sans-serif; color: #333; background: #f4f4f4; padding: 20px; }
+    .container { background: #fff; padding: 30px; border-radius: 8px; box-shadow: 0 2px 8px rgba(0,0,0,0.1); }
+    h2 { color: #2b6777; margin-bottom: 20px; }
+    .info-row { margin-bottom: 12px; }
+    .info-label { font-weight: bold; display: inline-block; width: 150px; color: #444; }
+    .message { white-space: pre-wrap; background: #f9f9f9; padding: 15px; border-radius: 6px; border-left: 4px solid #2b6777; }
+  </style>
+</head>
+<body>
+  <div class="container">
+    <h2>New Contact Form Submission</h2>
+
+    <div class="info-row"><span class="info-label">Name:</span> {{ name }}</div>
+    <div class="info-row"><span class="info-label">Email:</span> {{ email }}</div>
+    <div class="info-row"><span class="info-label">Phone:</span> {{ phone }}</div>
+    <div class="info-row"><span class="info-label">Address:</span> {{ address }}</div>
+    <div class="info-row"><span class="info-label">Service:</span> {{ service }}</div>
+    <div class="info-row"><span class="info-label">Location(s):</span> {{ locations|join:", " }}</div>
+    <div class="info-row"><span class="info-label">Message:</span></div>
+    <div class="message">{{ message }}</div>
+  </div>
+</body>
+</html>

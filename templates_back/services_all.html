@@ -1,0 +1,128 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>All Services - Therapy Point</title>
+
+  <!-- Google Fonts -->
+  <link href="https://fonts.googleapis.com/css?family=Roboto:100,300,400,500,700,900&display=swap" rel="stylesheet">
+
+  <!-- Bootstrap CSS -->
+  <link rel="stylesheet" href="{% static 'vendor/bootstrap/css/bootstrap.min.css' %}">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/css/bootstrap.min.css">
+
+  <!-- FontAwesome -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css">
+
+  <!-- Additional CSS Files -->
+  <link rel="stylesheet" href="{% static 'assets/css/fontawesome.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/templatemo-stand-blog.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/owl.css' %}">
+  <link rel="stylesheet" href="{% static 'assets/css/styles.css' %}">
+
+  <!-- Animate CSS -->
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
+
+  <style>
+    .service-img {
+      width: 100%;
+      height: 200px;
+      object-fit: cover;
+      border-radius: 10px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+      transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+    }
+    .service-img:hover {
+      transform: scale(1.05);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.2);
+    }
+    .card {
+      transition: transform 0.4s ease-in-out, box-shadow 0.4s ease-in-out;
+    }
+    .card:hover {
+      transform: translateY(-10px);
+      box-shadow: 0 10px 25px rgba(0, 0, 0, 0.15);
+    }
+    .card-title {
+      font-weight: 600;
+      color: #444;
+    }
+    .card-text {
+      color: #666;
+      font-size: 0.95rem;
+    }
+    .admin-controls a {
+      margin-right: 10px;
+      transition: color 0.3s ease;
+    }
+    .admin-controls a:hover {
+      color: #ff6b6b;
+    }
+  </style>
+</head>
+<body>
+
+  {% include 'header.html' %}
+
+  <div class="container mt-5">
+    <h2 class="text-center mb-4 text-danger animate__animated animate__fadeInDown">All Services</h2>
+    <div class="row">
+      {% for service in services %}
+      <div class="col-md-4 mb-4">
+        <div class="card h-100 shadow text-center animate__animated animate__fadeInUp" style="animation-delay: {{ forloop.counter0|floatformat:1|add:'0.1' }}s;">
+          {% if service.image %}
+          <a href="{% url 'service_detail' service.id %}">
+            <img src="{{ service.image.url }}" class="service-img mx-auto mb-3" alt="{{ service.title }}">
+          </a>
+          {% endif %}
+          <div class="card-body">
+            <h5 class="card-title"><a href="{% url 'service_detail' service.id %}" class="text-decoration-none">{{ service.title }}</a></h5>
+            <p class="card-text">{{ service.description|truncatewords:20 }}</p>
+            {% if user.is_staff %}
+            <div class="admin-controls mt-2">
+              <a href="{% url 'edit_service' service.id %}" class="text-primary"><i class="fas fa-edit"></i> Edit</a>
+              <a href="{% url 'delete_service' service.id %}" class="text-danger" onclick="return confirm('Are you sure you want to delete this service?');"><i class="fas fa-trash"></i> Delete</a>
+            </div>
+            {% endif %}
+          </div>
+        </div>
+      </div>
+      {% empty %}
+      <p class="text-center">No services available right now.</p>
+      {% endfor %}
+    </div>
+    {% if user.is_staff %}
+    <div class="text-center mt-4">
+      <a href="{% url 'create_service' %}" class="btn btn-success animate__animated animate__bounceIn">Add New Service</a>
+    </div>
+    {% endif %}
+  </div>
+
+  {% include 'footer.html' %}
+
+  <!-- Scripts -->
+  <script src="{% static 'vendor/jquery/jquery.min.js' %}"></script>
+  <script src="{% static 'vendor/bootstrap/js/bootstrap.bundle.min.js' %}"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.1/dist/js/bootstrap.min.js"></script>
+
+  <!-- Preloader Hide Logic -->
+  <script>
+    window.addEventListener('load', function () {
+      const loader = document.querySelector('.preloader');
+      if (loader) {
+        loader.style.display = 'none';
+      }
+    });
+  </script>
+
+  <!-- Optional Plugins -->
+  <script src="{% static 'assets/js/custom.js' %}"></script>
+  <script src="{% static 'assets/js/owl.js' %}"></script>
+  <script src="{% static 'assets/js/slick.js' %}"></script>
+  <script src="{% static 'assets/js/isotope.js' %}"></script>
+  <script src="{% static 'assets/js/accordions.js' %}"></script>
+
+</body>
+</html>

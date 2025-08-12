@@ -1,0 +1,55 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Page Not Found | TherapyPoint</title>
+  <link rel="stylesheet" href="{% static 'assets/css/bootstrap.min.css' %}">
+  <style>
+    body {
+      background: #f2f2f2;
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+    }
+    .error-container {
+      text-align: center;
+      background: white;
+      padding: 40px;
+      border-radius: 10px;
+      box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+    }
+    .error-code {
+      font-size: 96px;
+      font-weight: bold;
+      color: #5a1ea1;
+    }
+    .error-message {
+      font-size: 24px;
+      color: #333;
+    }
+    .home-link {
+      margin-top: 20px;
+      display: inline-block;
+      background: #5a1ea1;
+      color: white;
+      padding: 10px 20px;
+      border-radius: 5px;
+      text-decoration: none;
+    }
+    .home-link:hover {
+      background: #3a2951;
+    }
+  </style>
+</head>
+<body>
+  <div class="error-container">
+    <div class="error-code">404</div>
+    <div class="error-message">Oops! Page not found.</div>
+    <p>The page you're looking for doesn’t exist or has been moved.</p>
+    <a href="{% url 'index' %}" class="home-link">Back to Home</a>
+  </div>
+</body>
+</html>

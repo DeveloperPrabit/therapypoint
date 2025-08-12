@@ -1,78 +1,296 @@
+<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.0/css/all.min.css" />
 
 <style>
-  h4 {
-    text-align: left;
-    color: #dfdada;
-    letter-spacing: 1px;
-    margin-bottom: 20px;
-    font-size: 20px;
-  }
+/* ===== Modern Footer Styling ===== */
+footer {
+  background-color: #024a52; /* Premium teal */
+  color: #ffffff;
+  font-family: 'Segoe UI', Tahoma, sans-serif;
+  padding: 50px 20px 30px;
+}
 
-  li {
-    text-decoration: none;
-    text-align: left;
-  }
+/* --- Grid Layout --- */
+.footer-top {
+  max-width: 1200px;
+  margin: 0 auto 40px;
+  display: grid;
+  grid-template-columns: 1.5fr 1fr 1fr 1.5fr;
+  gap: 40px;
+}
 
-  li a {
-    color: rgb(153, 147, 147);
-  }
+/* --- Logo & Tagline --- */
+.footer-logo img {
+  max-width: 170px;
+  margin-bottom: 10px;
+}
+.footer-logo p {
+  font-size: 14px;
+  color: #c8e6e6;
+  margin-bottom: 15px;
+}
 
-  li a:hover {
-    color: orange;
-  }
+/* --- Social Icons --- */
+.social-icons {
+  display: flex;
+  gap: 12px;
+}
+.social-icons a {
+  background: #ffffff;
+  color: #024a52;
+  width: 40px;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border-radius: 50%;
+  font-size: 16px;
+  transition: all 0.3s ease;
+}
+.social-icons a:hover {
+  background: #ffcc00;
+  color: #000;
+  transform: translateY(-3px);
+}
 
-  @media screen and (max-width:600px) {
+/* --- Headings --- */
+.footer-section h4 {
+  font-size: 17px;
+  font-weight: 700;
+  margin-bottom: 15px;
+  color: #ffffff;
+}
 
-    h4,
-    li {
-      text-align: center;
-    }
+/* --- Links --- */
+.footer-section ul {
+  list-style: none;
+  padding: 0;
+}
+.footer-section ul li {
+  margin-bottom: 8px;
+}
+.footer-section ul li a {
+  color: #dfeeee;
+  font-size: 14px;
+  text-decoration: none;
+  transition: color 0.3s ease;
+}
+.footer-section ul li a:hover {
+  color: #ffcc00;
+}
+
+/* --- Support & Book Button --- */
+.support-contact a {
+  color: #ffffff;
+  font-size: 15px;
+  text-decoration: none;
+}
+.book-now {
+  display: inline-block;
+  margin-top: 8px;
+  padding: 8px 18px;
+  background-color: #f4a460;
+  color: #fff;
+  font-weight: 600;
+  border-radius: 4px;
+  transition: all 0.3s ease;
+}
+.book-now:hover {
+  background-color: #ffcc00;
+  color: #000;
+}
+
+/* --- Contact Info --- */
+.footer-contact p {
+  font-size: 13px;
+  color: #e0f4f4;
+  margin-bottom: 8px;
+  line-height: 1.5;
+}
+.footer-contact strong {
+  color: #ffffff;
+}
+.footer-contact a {
+  color: #ffcc00;
+}
+.footer-contact a:hover {
+  text-decoration: underline;
+}
+
+/* --- Footer Bottom --- */
+.footer-bottom {
+  border-top: 1px solid rgba(255, 255, 255, 0.15);
+  padding-top: 15px;
+  font-size: 13px;
+  text-align: center;
+  color: #c8e6e6;
+}
+.footer-bottom-links a {
+  color: #dfeeee;
+  margin: 0 6px;
+  text-decoration: none;
+}
+.footer-bottom-links a:hover {
+  color: #ffcc00;
+}
+
+/* --- Responsive --- */
+@media (max-width: 900px) {
+  .footer-top {
+    grid-template-columns: 1fr 1fr;
+    gap: 25px;
   }
+}
+@media (max-width: 600px) {
+  .footer-top {
+    grid-template-columns: 1fr;
+    text-align: center;
+  }
+  .social-icons {
+    justify-content: center;
+  }
+}
+
 </style>
 
 <footer>
-  <div class="container">
-    <div class="row">
-      <div class="col-lg-3 col-md-6 col-sm-12">
-        <h4 class="text-light">SERVICE</h4>
-        <ul>
-          <li><a href="#">Shipping & Returns</a></li>
-          <li><a href="#">Size Guide</a></li>
-        </ul>
+  <div class="footer-top">
+    <!-- Logo & Social -->
+    <div class="footer-logo" aria-label="Footer branding and social media links">
+      {% if footer %}
+        <img src="{% if footer.logo %}{{ footer.logo.url }}{% else %}http://therapypoint.com.au/wp-content/uploads/2021/07/therapy-logo-2.png{% endif %}"
+             alt="{{ footer.organization_name|default:'Activ Therapy' }} Logo" />
+        <p>{{ footer.tagline|default:"Live Healthier and Happier for Longer" }}</p>
+      {% else %}
+        <img src="http://therapypoint.com.au/wp-content/uploads/2021/07/therapy-logo-2.png" alt="Activ Therapy Logo" />
+        <p>Live Healthier and Happier for Longer</p>
+      {% endif %}
+      <div class="social-icons">
+        {% if footer %}
+          {% if footer.facebook %}<a href="{{ footer.facebook }}" aria-label="Facebook" target="_blank" rel="noopener noreferrer"><i class="fab fa-facebook-f"></i></a>{% endif %}
+          {% if footer.twitter %}<a href="{{ footer.twitter }}" aria-label="Twitter" target="_blank" rel="noopener noreferrer"><i class="fab fa-twitter"></i></a>{% endif %}
+          {% if footer.instagram %}<a href="{{ footer.instagram }}" aria-label="Instagram" target="_blank" rel="noopener noreferrer"><i class="fab fa-instagram"></i></a>{% endif %}
+          {% if footer.linkedin %}<a href="{{ footer.linkedin }}" aria-label="LinkedIn" target="_blank" rel="noopener noreferrer"><i class="fab fa-linkedin-in"></i></a>{% endif %}
+          {% if footer.youtube %}<a href="{{ footer.youtube }}" aria-label="YouTube" target="_blank" rel="noopener noreferrer"><i class="fab fa-youtube"></i></a>{% endif %}
+          {% if footer.tiktok %}<a href="{{ footer.tiktok }}" aria-label="TikTok" target="_blank" rel="noopener noreferrer"><i class="fab fa-tiktok"></i></a>{% endif %}
+        {% else %}
+          <a href="#" aria-label="Facebook"><i class="fab fa-facebook-f"></i></a>
+          <a href="#" aria-label="Twitter"><i class="fab fa-twitter"></i></a>
+          <a href="#" aria-label="Instagram"><i class="fab fa-instagram"></i></a>
+          <a href="#" aria-label="LinkedIn"><i class="fab fa-linkedin-in"></i></a>
+          <a href="#" aria-label="YouTube"><i class="fab fa-youtube"></i></a>
+          <a href="#" aria-label="TikTok"><i class="fab fa-tiktok"></i></a>
+        {% endif %}
       </div>
-      <div class="col-lg-3 col-md-6 col-sm-12">
-        <h4 class="text-light">ACCOUNT</h4>
-        <ul>
-          <li><a href="{% url 'signin' %}">Login</a></li>
-          <li><a href="{% url 'signup' %}">Signup</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-3 col-md-6 col-sm-12">
-        <h4 class="text-light">INFORMATION</h4>
-        <ul>
-          <li><a href="{% url 'blog' %}">Our Story</a></li>
-          <li><a href="#">Find a stocklist</a></li>
-        </ul>
-      </div>
-      <div class="col-lg-3 col-md-6 col-sm-12">
-        <h4 class="text-light">CONNECT</h4>
-        <ul>
-          <li><a href="https://www.linkedin.com/in/keerti-vishwkarma-8ba754243/">Facebook</a></li>
-          <li><a href="https://www.linkedin.com/in/keerti-vishwkarma-8ba754243/">Instagram</a></li>
-        </ul>
-      </div>
+    </div>
 
+    <!-- About Section -->
+    <div class="footer-section" aria-label="About">
+      <h4>{{ footer.about_heading|default:"Activ Therapy" }}</h4>
+      <ul>
+        {% if footer %}
+          {% for link in footer.get_about_links %}
+            <li><a href="{{ link.1 }}">{{ link.0 }}</a></li>
+          {% empty %}
+            <li><a href="#">About Us</a></li>
+            <li><a href="#">Locations</a></li>
+            <li><a href="#">Blogs</a></li>
+            <li><a href="#">Careers</a></li>
+          {% endfor %}
+        {% else %}
+          <li><a href="#">About Us</a></li>
+          <li><a href="#">Locations</a></li>
+          <li><a href="#">Blogs</a></li>
+          <li><a href="#">Careers</a></li>
+        {% endif %}
+      </ul>
+    </div>
+
+    <!-- Services Section -->
+    <div class="footer-section" aria-label="Services">
+      <h4>{{ footer.services_heading|default:"Services" }}</h4>
+      <ul>
+        {% for therapy in therapy_methods %}
+          <li><a href="{% url 'therapy_method_detail' therapy.id %}">{{ therapy.title }}</a></li>
+        {% empty %}
+          <li><a href="#">Physiotherapy</a></li>
+          <li><a href="#">Chiropractic</a></li>
+          <li><a href="#">Massage Therapy</a></li>
+          <li><a href="#">Hydrotherapy</a></li>
+          <li><a href="#">Dry Needling</a></li>
+        {% endfor %}
+      </ul>
+    </div>
+
+    <!-- Support + Contact Us side by side -->
+    <div class="footer-section" aria-label="Support and Contact">
+      <h4>{{ footer.support_heading|default:"Support" }}</h4>
+
+      <div class="support-contact-wrapper">
+        <!-- Support column -->
+        <div class="support-contact">
+          {% if footer %}
+            <a href="{{ footer.support_link|default:'tel:0297264491' }}">{{ footer.support_text|default:"(02) 9726 4491" }}</a><br />
+            <a href="{{ footer.book_link|default:'#' }}" class="book-now">{{ footer.book_text|default:"Book Now" }}</a>
+          {% else %}
+            <a href="tel:0297264491">(02) 9726 4491</a><br />
+            <a href="#" class="book-now">Book Now</a>
+          {% endif %}
+        </div>
+
+        <br>
+
+        <!-- Contact Us column -->
+        <div class="footer-contact">
+          <h3>Contact Us</h3> <br>
+          <p><strong>Location 1:</strong> 76 Barbara Blvd, Seven Hills NSW 2147, Australia</p>
+          <p><strong>Location 2:</strong> 21B, Level 2, 13 Digitaria Drive, Gledswood Hills NSW 2557, Australia</p>
+          <p>
+            <strong>Phone:</strong> Tel: 1300 908 054<br />
+            <strong>Email:</strong> <a href="mailto:info@therapypoint.com.au">info@therapypoint.com.au</a>
+          </p>
+          <p>
+            <strong>Open Hours:</strong><br />
+            Monday - Friday: 8AM - 7PM<br />
+            Saturday: 8AM - 4PM<br />
+            Sunday: Closed
+          </p>
+        </div>
+      </div>
     </div>
   </div>
 
-  <div class="container mt-5">
-    <div class="row">
-      <div class="col-lg-12">
-        <div class="p-3">
-          <p>Developed with 💖 by Therapy Points</a> <br>
-            &copy; Copyright 2025 | All Rights Reserved
-        </div>
-      </div>
+  <div class="footer-bottom">
+    <div class="footer-locations" aria-label="Locations">
+      {% if footer %}
+        {% for location in footer.get_locations %}
+          <a href="{{ location.1 }}">{{ location.0 }}</a>
+        {% empty %}
+          <a href="#">Liverpool</a>
+          <a href="#">Casula</a>
+          <a href="#">Chipping Norton</a>
+        {% endfor %}
+      {% else %}
+        <a href="#">Seven Hills</a>
+        <a href="#">Gledswood Hills</a>
+        
+      {% endif %}
+    </div>
+    <div class="footer-bottom-links" aria-label="Footer legal and credits">
+      {% if footer %}
+        <span>{{ footer.copyright_text|default:"Copyright ©2024 Activ Therapy" }} |</span>
+        {% for link in footer.get_bottom_links %}
+          <a href="{{ link.1 }}">{{ link.0 }}</a> |
+        {% empty %}
+          <a href="#">Terms and Conditions</a> |
+          <a href="#">Privacy Policy</a> |
+        {% endfor %}
+        <span>Designed and Managed by <a href="{{ footer.designer_link|default:'#' }}">{{ footer.designer_text|default:"Locally - Local Experts" }}</a></span>
+      {% else %}
+        <span>Copyright ©2024 Activ Therapy |</span>
+        <a href="#">Terms and Conditions</a> |
+        <a href="#">Privacy Policy</a> |
+        <span>Designed and Managed by <a href="#">Locally - Local Experts</a></span>
+      {% endif %}
     </div>
   </div>
 </footer>
