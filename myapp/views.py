@@ -337,7 +337,16 @@ def footer_view(request):
     })
 
 
-# ✅ Chatbot API View
+from django.views.decorators.csrf import csrf_exempt
+from django.http import JsonResponse
+import json
+from django.core.mail import send_mail
+from django.conf import settings
+
+from .models import FAQ, SystemPrompt, AppointmentRequest
+
+user_sessions = {}
+
 @csrf_exempt
 def chatbot_api(request):
     if request.method == 'POST':
@@ -379,6 +388,15 @@ def chatbot_api(request):
             session['time'] = message
             session['step'] = 'done'
 
+            # Save appointment to DB
+            AppointmentRequest.objects.create(
+                full_name=session['name'],
+                email=session['email'],
+                phone=session['phone'],
+                preferred_time=session['time'],
+            )
+
+            # Send Email Booking
             subject = "New Appointment Request"
             body = f"""
 New Appointment Request:
@@ -392,33 +410,15 @@ Preferred Time: {session['time']}
                 subject,
                 body,
                 settings.DEFAULT_FROM_EMAIL,
-                ['prabitjoshi@gmail.com'],
+                ['prabitjoshi@gmail.com'],  # Change to your admin email
                 fail_silently=False
             )
 
-            try:
-                appointment_time = datetime.strptime(session['time'], '%I %p')
-                now = datetime.now()
-                appointment_datetime = datetime.combine(now.date(), appointment_time.time())
-                aware_appointment = make_aware(appointment_datetime)
-                phone_number = '+977' + session['phone'].lstrip('0')
-
-                schedule('myapp.tasks.place_missed_call', phone_number, hook='myapp.tasks.log_result',
-                         next_run=aware_appointment - timedelta(hours=1),
-                         task_name=f"Reminder for {session['name']}")
-                schedule('myapp.tasks.place_missed_call', phone_number, hook='myapp.tasks.log_result',
-                         next_run=aware_appointment - timedelta(minutes=30),
-                         task_name=f"Missed Call for {session['name']}")
-                schedule('myapp.tasks.place_missed_call', phone_number, hook='myapp.tasks.log_result',
-                         next_run=aware_appointment + timedelta(minutes=10),
-                         task_name=f"Follow-up Call for {session['name']}")
-            except Exception as e:
-                print("❌ Scheduling failed:", e)
-
-            response = f"✅ Thank you, {session['name']}! Your appointment for {session['time']} has been received."
+            response = f"✅ Thank you, {session['name']}! Your appointment for {session['time']} has been received. We will contact you shortly."
             user_sessions.pop(session_id)
             return JsonResponse({'response': response})
 
+        # Fallback to FAQ
         faq_match = FAQ.objects.filter(question__icontains=message).first()
         if faq_match:
             return JsonResponse({'response': faq_match.answer})
@@ -429,6 +429,7 @@ Preferred Time: {session['time']}
 
     return JsonResponse({'response': "❌ Invalid request method."})
 
+# ✅ Funding Options View
     from django.shortcuts import render, get_object_or_404
 from .models import FundingOptionPage
 

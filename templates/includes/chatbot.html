@@ -1,8 +1,8 @@
 <div id="chatbot" class="chatbot-container shadow">
   <div class="chat-header bg-primary text-white p-2">
-    Ask Me Anything <span style="float:right;" onclick="toggleChat()">✖</span>
+    Ask Me Anything <span style="float:right; cursor:pointer;" onclick="toggleChat()">✖</span>
   </div>
-  <div class="chat-body" id="chat-messages" style="height: 300px; overflow-y: scroll; padding: 10px;"></div>
+  <div class="chat-body" id="chat-messages" style="height: 300px; overflow-y: scroll; padding: 10px; background: #f9f9f9;"></div>
   <div class="chat-footer p-2">
     <input type="text" id="user-input" placeholder="Type a question..." class="form-control" onkeypress="if(event.key==='Enter'){sendMessage();}">
   </div>
@@ -10,7 +10,7 @@
 
 <style>
 .chatbot-container {
-  width: 300px;
+  width: 320px;
   position: fixed;
   bottom: 20px;
   right: 20px;
@@ -18,6 +18,24 @@
   background: white;
   display: none;
   z-index: 9999;
+  box-shadow: 0 0 15px rgba(0,0,0,0.3);
+}
+.chat-header {
+  font-weight: 600;
+  font-size: 1.1rem;
+  user-select: none;
+}
+.chat-body div {
+  margin-bottom: 8px;
+}
+.chat-body b {
+  color: #0d6efd;
+}
+.chat-footer input {
+  width: 100%;
+}
+button.btn {
+  cursor: pointer;
 }
 </style>
 
@@ -25,16 +43,20 @@
 function toggleChat() {
   const bot = document.getElementById('chatbot');
   bot.style.display = bot.style.display === 'block' ? 'none' : 'block';
+  if(bot.style.display === 'block') {
+    document.getElementById('user-input').focus();
+  }
 }
 
 function sendMessage(message = null) {
   const input = document.getElementById('user-input');
   const chatBox = document.getElementById('chat-messages');
-  let msg = message || input.value;
-  if (!msg.trim()) return;
+  let msg = message || input.value.trim();
+  if (!msg) return;
 
   chatBox.innerHTML += `<div><b>You:</b> ${msg}</div>`;
   input.value = '';
+  chatBox.scrollTop = chatBox.scrollHeight;
 
   fetch("{% url 'chatbot_api' %}", {
     method: "POST",
@@ -48,9 +70,12 @@ function sendMessage(message = null) {
   .then(data => {
     chatBox.innerHTML += `<div><b>Bot:</b> ${data.response}</div>`;
     chatBox.scrollTop = chatBox.scrollHeight;
+  })
+  .catch(() => {
+    chatBox.innerHTML += `<div><b>Bot:</b> Sorry, something went wrong.</div>`;
+    chatBox.scrollTop = chatBox.scrollHeight;
   });
 }
 </script>
-
 
 <button onclick="toggleChat()" style="position: fixed; bottom: 20px; right: 20px; z-index: 9999;" class="btn btn-primary">💬 Chat</button>

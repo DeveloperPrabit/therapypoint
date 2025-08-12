@@ -114,6 +114,19 @@ class ContactSidebar(models.Model):
     def __str__(self):
         return "Contact Sidebar Info"
 
+#chatbot models
+
+class AppointmentRequest(models.Model):
+    full_name = models.CharField(max_length=255)
+    email = models.EmailField()
+    phone = models.CharField(max_length=30)
+    preferred_time = models.CharField(max_length=20)
+    created_at = models.DateTimeField(auto_now_add=True)
+    processed = models.BooleanField(default=False)  # mark handled or not
+
+    def __str__(self):
+        return f"{self.full_name} - {self.preferred_time}"
+
 # This model is for the footer content
 
 class Footer(models.Model):

@@ -9,7 +9,8 @@ from .models import (
     Footer, TherapyMethod, TherapySubMethod, Post, Comment, Contact,
     Service, ContactSidebar, FAQ, SystemPrompt, AboutSection, Video,
     BlogMedia, Visitor, CarouselSlide, CarouselImage, AdditionalContent,
-    FundingOption, FundingOptionImage, FundingOptionPage, FundingDetail
+    FundingOption, FundingOptionImage, FundingOptionPage, FundingDetail,
+    AppointmentRequest,  # your chatbot model
 )
 
 class TherapySubMethodInline(admin.TabularInline):
@@ -172,19 +173,13 @@ admin.site.register(ContactSidebar)
 admin.site.register(FAQ)
 admin.site.register(SystemPrompt)
 
-try:
-    from django_q.admin import ScheduleAdmin
-    from django_q.models import Schedule
-    from django.contrib.admin.sites import AlreadyRegistered
-
-    admin.site.unregister(Schedule)
-except admin.sites.NotRegistered:
-    pass
-
-try:
-    admin.site.register(Schedule, ScheduleAdmin)
-except AlreadyRegistered:
-    pass
+# Chatbot admin
+@admin.register(AppointmentRequest)
+class AppointmentRequestAdmin(admin.ModelAdmin):
+    list_display = ('full_name', 'email', 'phone', 'preferred_time', 'created_at', 'processed')
+    list_filter = ('processed', 'created_at')
+    search_fields = ('full_name', 'email', 'phone')
+    ordering = ('-created_at',)
 
 admin.site.site_header = 'TherapyPoint | ADMIN PANEL'
 admin.site.site_title = 'TherapyPoint | Admin'
