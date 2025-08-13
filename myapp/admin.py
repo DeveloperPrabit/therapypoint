@@ -1,16 +1,14 @@
 from django.contrib import admin
 from django import forms
-from django_ckeditor_5.widgets import CKEditor5Widget
 from django.db.models.functions import TruncDate
 from django.db.models import Count
 import json
-from django.core.exceptions import ValidationError
 from .models import (
     Footer, TherapyMethod, TherapySubMethod, Post, Comment, Contact,
-    Service, ContactSidebar, FAQ, SystemPrompt, AboutSection, Video,
-    BlogMedia, Visitor, CarouselSlide, CarouselImage, AdditionalContent,
+    Service, ContactSidebar, FAQ, SystemPrompt, AboutSection, AboutImage,
+    Video, BlogMedia, Visitor, CarouselSlide, CarouselImage, AdditionalContent,
     FundingOption, FundingOptionImage, FundingOptionPage, FundingDetail,
-    AppointmentRequest,  # your chatbot model
+    AppointmentRequest,
 )
 
 class TherapySubMethodInline(admin.TabularInline):
@@ -42,12 +40,16 @@ class FundingOptionPageAdmin(admin.ModelAdmin):
     list_display = ('title',)
     inlines = [FundingDetailInline]
 
-class AboutSectionAdminForm(forms.ModelForm):
-    content = forms.CharField(widget=CKEditor5Widget(config_name='default'))
+class AboutImageInline(admin.TabularInline):
+    model = AboutImage
+    extra = 1
+    fields = ['image', 'alignment', 'order']
 
-    class Meta:
-        model = AboutSection
-        fields = '__all__'
+@admin.register(AboutSection)
+class AboutSectionAdmin(admin.ModelAdmin):
+    list_display = ['title', 'order']
+    ordering = ['order']
+    inlines = [AboutImageInline]
 
 class CarouselImageInline(admin.TabularInline):
     model = CarouselImage
@@ -70,12 +72,6 @@ class CarouselImageAdmin(admin.ModelAdmin):
     list_display = ['slide', 'order', 'image']
     list_filter = ['slide']
     search_fields = ['slide__title']
-
-@admin.register(AboutSection)
-class AboutSectionAdmin(admin.ModelAdmin):
-    form = AboutSectionAdminForm
-    list_display = ['title', 'order']
-    ordering = ['order']
 
 @admin.register(Video)
 class VideoAdmin(admin.ModelAdmin):
@@ -165,6 +161,13 @@ class FundingOptionImageAdmin(admin.ModelAdmin):
     list_filter = ['funding_option']
     search_fields = ['funding_option__name']
 
+@admin.register(AppointmentRequest)
+class AppointmentRequestAdmin(admin.ModelAdmin):
+    list_display = ('full_name', "email", 'phone', 'preferred_time', 'created_at', 'processed')
+    list_filter = ('processed', 'created_at')
+    search_fields = ('full_name', 'email', 'phone')
+    ordering = ('-created_at',)
+
 admin.site.register(Post)
 admin.site.register(Comment)
 admin.site.register(Contact)
@@ -172,14 +175,6 @@ admin.site.register(Service)
 admin.site.register(ContactSidebar)
 admin.site.register(FAQ)
 admin.site.register(SystemPrompt)
-
-# Chatbot admin
-@admin.register(AppointmentRequest)
-class AppointmentRequestAdmin(admin.ModelAdmin):
-    list_display = ('full_name', 'email', 'phone', 'preferred_time', 'created_at', 'processed')
-    list_filter = ('processed', 'created_at')
-    search_fields = ('full_name', 'email', 'phone')
-    ordering = ('-created_at',)
 
 admin.site.site_header = 'TherapyPoint | ADMIN PANEL'
 admin.site.site_title = 'TherapyPoint | Admin'

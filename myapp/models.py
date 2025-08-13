@@ -1,12 +1,9 @@
 from django.db import models
 from django.contrib.auth.models import User
-from datetime import datetime  
+from datetime import datetime
 
 now = datetime.now()
 time = now.strftime("%d %B %Y")
-
-# Create your models here.
-from django.db import models
 
 class CarouselSlide(models.Model):
     title = models.CharField(max_length=255, blank=True)
@@ -25,7 +22,6 @@ class CarouselImage(models.Model):
     def __str__(self):
         return f"Image {self.order} for {self.slide.title}"
 
-# Models for the TherapyPoint homepage video
 class Video(models.Model):
     title = models.CharField(max_length=200)
     video_file = models.FileField(upload_to='videos/', max_length=255)
@@ -46,18 +42,35 @@ class Post(models.Model):
     def __str__(self):
         return str(self.postname)
 
-from django_ckeditor_5.fields import CKEditor5Field
-
 class AboutSection(models.Model):
-    title = models.CharField(max_length=200)
-    subtitle = models.CharField(max_length=255, blank=True)
-    content = CKEditor5Field('Content', config_name='default')
-    image = models.ImageField(upload_to='about/', blank=True, null=True)
-    video_url = models.URLField(blank=True, null=True)
+    title = models.CharField(max_length=200, blank=True, null=True)
+    subtitle = models.CharField(max_length=255, blank=True, null=True)
+    description = models.TextField(blank=True, null=True)
     order = models.PositiveIntegerField(default=0)
-
+    
+    class Meta:
+        ordering = ['order']
+    
     def __str__(self):
-        return self.title
+        return self.title or f"Section {self.id}"
+
+class AboutImage(models.Model):
+    ALIGNMENT_CHOICES = [
+        ('left', 'Left'),
+        ('right', 'Right'),
+        ('center', 'Center'),
+    ]
+    
+    section = models.ForeignKey(AboutSection, related_name='images', on_delete=models.CASCADE)
+    image = models.ImageField(upload_to='about/', blank=True, null=True)
+    alignment = models.CharField(max_length=10, choices=ALIGNMENT_CHOICES, default='center')
+    order = models.PositiveIntegerField(default=0)
+    
+    class Meta:
+        ordering = ['order']
+    
+    def __str__(self):
+        return f"Image {self.order} for {self.section.title or 'Section ' + str(self.section.id)}"
 
 class BlogMedia(models.Model):
     title = models.CharField(max_length=255)
@@ -114,20 +127,16 @@ class ContactSidebar(models.Model):
     def __str__(self):
         return "Contact Sidebar Info"
 
-#chatbot models
-
 class AppointmentRequest(models.Model):
     full_name = models.CharField(max_length=255)
     email = models.EmailField()
     phone = models.CharField(max_length=30)
     preferred_time = models.CharField(max_length=20)
     created_at = models.DateTimeField(auto_now_add=True)
-    processed = models.BooleanField(default=False)  # mark handled or not
+    processed = models.BooleanField(default=False)
 
     def __str__(self):
         return f"{self.full_name} - {self.preferred_time}"
-
-# This model is for the footer content
 
 class Footer(models.Model):
     organization_name = models.CharField(max_length=255, default="Activ Therapy")
@@ -164,8 +173,6 @@ class Footer(models.Model):
 
     def __str__(self):
         return f"Footer for {self.organization_name}"
-
-
 
 class FAQ(models.Model):
     question = models.CharField(max_length=500)
@@ -220,34 +227,26 @@ class CustomCode(models.Model):
     def __str__(self):
         return f"Custom Code ({self.updated_at.strftime('%Y-%m-%d %H:%M')})"
 
-
-from django.db import models
-from django_ckeditor_5.fields import CKEditor5Field
-
 class FundingOptionPage(models.Model):
     title = models.CharField(max_length=200)
-    intro_text = CKEditor5Field('Intro Text', config_name='default', blank=True)
-    extra_info = CKEditor5Field('Extra Info', config_name='default', blank=True)
+    intro_text = models.TextField(blank=True, null=True)
+    extra_info = models.TextField(blank=True, null=True)
     image = models.ImageField(upload_to='funding_images/', blank=True, null=True)
 
     def __str__(self):
         return self.title
 
-
 class FundingDetail(models.Model):
     funding_option = models.ForeignKey(FundingOptionPage, related_name='details', on_delete=models.CASCADE)
     heading = models.CharField(max_length=200)
-    description = CKEditor5Field('Description', config_name='default')
+    description = models.TextField()
 
     def __str__(self):
         return self.heading
-    
-    #This model for therapy methods and sub-methods
-
 
 class TherapyMethod(models.Model):
     title = models.CharField(max_length=255)
-    image = models.ImageField(upload_to='therapy_methods/', blank=True, null=True)  # Make image optional
+    image = models.ImageField(upload_to='therapy_methods/', blank=True, null=True)
     description = models.TextField()
     order = models.PositiveIntegerField(default=0)
 
@@ -256,8 +255,6 @@ class TherapyMethod(models.Model):
 
     def __str__(self):
         return self.title
-
-
 
 class TherapySubMethod(models.Model):
     therapy = models.ForeignKey(TherapyMethod, related_name='methods', on_delete=models.CASCADE)

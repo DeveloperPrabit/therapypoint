@@ -13,22 +13,22 @@ from django.utils.timezone import make_aware
 from datetime import datetime, timedelta
 from django_q.tasks import schedule
 import json
+import mimetypes
 
 from .models import (
-    Post, Comment, Service, ContactSidebar,
-    Video, AboutSection, FAQ, SystemPrompt,
-    CarouselSlide, AdditionalContent, FundingOption
+    Post, Comment, Service, ContactSidebar, Video, AboutSection,
+    FAQ, SystemPrompt, CarouselSlide, AdditionalContent, FundingOption,
+    TherapyMethod, AboutImage, BlogMedia, AppointmentRequest, FundingOptionPage,
+    Footer
 )
-
 
 user_sessions = {}
 
-# ✅ Homepage View
 def index(request):
     videos = Video.objects.all().order_by('-created_at')
     posts = Post.objects.filter(user_id=request.user.id).order_by("-id") if request.user.is_authenticated else []
     about_section = AboutSection.objects.order_by('order').first()
-    services = Service.objects.all()[:2]  # Limit to 2 services for homepage
+    services = Service.objects.all()[:2]
     carousel_slides = CarouselSlide.objects.filter(is_active=True).prefetch_related('images')
     additional_content = AdditionalContent.objects.all()
     funding_options = FundingOption.objects.all().prefetch_related('images')
@@ -47,9 +47,8 @@ def index(request):
         'funding_options': funding_options
     })
 
-# ✅ About Page
 def about_us(request):
-    sections = AboutSection.objects.all().order_by('order')
+    sections = AboutSection.objects.all().order_by('order').prefetch_related('images')
     return render(request, 'about.html', {'sections': sections})
 
 def home(request):
@@ -58,22 +57,19 @@ def home(request):
         'carousel_slides': carousel_slides,
     })
 
-# ✅ Services Page
 def services(request):
-    services = Service.objects.all()[:6]  # Limit to 6 services for display
+    services = Service.objects.all()[:6]
     return render(request, "services.html", {
         "services": services,
-        "show_view_all": Service.objects.count() > 6  # Show "View All" if more than 6 services
+        "show_view_all": Service.objects.count() > 6
     })
 
-# ✅ All Services Page
 def services_all(request):
-    services = Service.objects.all()  # No limit, show all services
+    services = Service.objects.all()
     return render(request, "services_all.html", {
         "services": services
     })
 
-# ✅ Service Detail View
 def service_detail(request, id):
     service = Service.objects.get(id=id)
     return render(request, "service_detail.html", {
@@ -81,10 +77,9 @@ def service_detail(request, id):
         "media_url": settings.MEDIA_URL
     })
 
-# ✅ Create Service (Admin Only)
 @login_required
 def create_service(request):
-    if not request.user.is_staff:  # Restrict to admins
+    if not request.user.is_staff:
         messages.error(request, "You do not have permission to create services.")
         return redirect('services')
     if request.method == 'POST':
@@ -96,7 +91,6 @@ def create_service(request):
         return redirect('services')
     return render(request, "create_service.html")
 
-# ✅ Edit Service (Admin Only)
 @login_required
 def edit_service(request, id):
     if not request.user.is_staff:
@@ -113,17 +107,15 @@ def edit_service(request, id):
         return redirect('services')
     return render(request, "edit_service.html", {'service': service})
 
-# ✅ Delete Service (Admin Only)
 @login_required
 def delete_service(request, id):
     if not request.user.is_staff:
         messages.error(request, "You do not have permission to delete services.")
         return redirect('services')
-    Service.objects.get(id=id).delete()  # Fixed: Use direct delete method
+    Service.objects.get(id=id).delete()
     messages.success(request, "Service deleted successfully.")
     return redirect('services')
 
-# ✅ Signup
 def signup(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -144,7 +136,6 @@ def signup(request):
         return redirect('signup')
     return render(request, "signup.html")
 
-# ✅ Signin
 def signin(request):
     if request.method == 'POST':
         username = request.POST['username']
@@ -158,24 +149,18 @@ def signin(request):
             return redirect("signin")
     return render(request, "signin.html")
 
-# ✅ Logout
 def logout(request):
     auth.logout(request)
     return redirect('index')
 
-# ✅ Blog View
-from .models import BlogMedia
-import mimetypes
-
 def blog(request):
     media_files = BlogMedia.objects.all().order_by('-created_at')
     for media in media_files:
-        # Use file path for accurate MIME type detection
         file_path = media.media_file.path
         mime_type, _ = mimetypes.guess_type(file_path) or ('', '')
         media.is_video = mime_type.startswith("video/")
 
-    return render(request, "blog.html", {
+    return render(request, "blog.html circa 2006", {
         'media_files': media_files,
         'posts': Post.objects.filter(user_id=request.user.id).order_by("-id"),
         'top_posts': Post.objects.all().order_by("-likes"),
@@ -184,7 +169,6 @@ def blog(request):
         'media_url': settings.MEDIA_URL
     })
 
-# ✅ Create Post
 def create(request):
     if request.method == 'POST':
         try:
@@ -198,7 +182,6 @@ def create(request):
         return redirect('index')
     return render(request, "create.html")
 
-# ✅ Profile View
 def profile(request, id):
     return render(request, 'profile.html', {
         'user': User.objects.get(id=id),
@@ -206,7 +189,6 @@ def profile(request, id):
         'media_url': settings.MEDIA_URL,
     })
 
-# ✅ Profile Edit
 def profileedit(request, id):
     if request.method == 'POST':
         firstname = request.POST['firstname']
@@ -223,7 +205,6 @@ def profileedit(request, id):
         'user': User.objects.get(id=id),
     })
 
-# ✅ Increase Likes
 def increaselikes(request, id):
     if request.method == 'POST':
         post = Post.objects.get(id=id)
@@ -231,7 +212,6 @@ def increaselikes(request, id):
         post.save()
     return redirect("index")
 
-# ✅ Single Post Details
 def post(request, id):
     post = Post.objects.get(id=id)
     comments = Comment.objects.filter(post_id=post.id)
@@ -244,21 +224,18 @@ def post(request, id):
         'total_comments': len(comments)
     })
 
-# ✅ Save Comment
 def savecomment(request, id):
     if request.method == 'POST':
         content = request.POST['message']
         Comment(post_id=id, user_id=request.user.id, content=content).save()
     return redirect("index")
 
-# ✅ Delete Comment
 def deletecomment(request, id):
     comment = Comment.objects.get(id=id)
     post_id = comment.post.id
     comment.delete()
     return post(request, post_id)
 
-# ✅ Edit Post
 def editpost(request, id):
     post = Post.objects.get(id=id)
     if request.method == 'POST':
@@ -272,13 +249,9 @@ def editpost(request, id):
         return profile(request, request.user.id)
     return render(request, "postedit.html", {'post': post})
 
-# ✅ Delete Post
 def deletepost(request, id):
     Post.objects.get(id=id).delete()
     return profile(request, request.user.id)
-
-# ✅ Contact Us Page + Email Sending
-from .models import ContactSidebar
 
 def contact_us(request):
     context = {}
@@ -322,12 +295,9 @@ def contact_us(request):
 
     return render(request, "contact.html", context)
 
-# ✅ Custom 404 View
 def custom_404_view(request, exception):
     return render(request, '404.html', status=404)
 
-# ✅ Footer View
-from .models import Footer
 def footer_view(request):
     footer = Footer.objects.last()
     therapy_methods = TherapyMethod.objects.order_by('order')
@@ -335,17 +305,6 @@ def footer_view(request):
         'footer': footer,
         'therapy_methods': therapy_methods,
     })
-
-
-from django.views.decorators.csrf import csrf_exempt
-from django.http import JsonResponse
-import json
-from django.core.mail import send_mail
-from django.conf import settings
-
-from .models import FAQ, SystemPrompt, AppointmentRequest
-
-user_sessions = {}
 
 @csrf_exempt
 def chatbot_api(request):
@@ -388,7 +347,6 @@ def chatbot_api(request):
             session['time'] = message
             session['step'] = 'done'
 
-            # Save appointment to DB
             AppointmentRequest.objects.create(
                 full_name=session['name'],
                 email=session['email'],
@@ -396,7 +354,6 @@ def chatbot_api(request):
                 preferred_time=session['time'],
             )
 
-            # Send Email Booking
             subject = "New Appointment Request"
             body = f"""
 New Appointment Request:
@@ -410,7 +367,7 @@ Preferred Time: {session['time']}
                 subject,
                 body,
                 settings.DEFAULT_FROM_EMAIL,
-                ['prabitjoshi@gmail.com'],  # Change to your admin email
+                ['prabitjoshi@gmail.com'],
                 fail_silently=False
             )
 
@@ -418,7 +375,6 @@ Preferred Time: {session['time']}
             user_sessions.pop(session_id)
             return JsonResponse({'response': response})
 
-        # Fallback to FAQ
         faq_match = FAQ.objects.filter(question__icontains=message).first()
         if faq_match:
             return JsonResponse({'response': faq_match.answer})
@@ -429,19 +385,10 @@ Preferred Time: {session['time']}
 
     return JsonResponse({'response': "❌ Invalid request method."})
 
-# ✅ Funding Options View
-    from django.shortcuts import render, get_object_or_404
-from .models import FundingOptionPage
-
 def funding_option_view(request):
-    # Get the first FundingOptionPage or 404
     funding = get_object_or_404(FundingOptionPage)
     return render(request, 'funding_option.html', {'funding': funding})
 
-# ✅ Therapy Methods View
-from .models import TherapyMethod
-
-# List all therapy methods (optional page)
 def therapy_methods_list(request):
     therapy_methods = TherapyMethod.objects.all()
     return render(request, 'therapymethods_list.html', {
@@ -449,7 +396,6 @@ def therapy_methods_list(request):
         'media_url': settings.MEDIA_URL
     })
 
-# Detail page for a single therapy method
 def therapy_method_detail(request, pk):
     therapy = get_object_or_404(TherapyMethod, pk=pk)
     return render(request, 'therapymethods.html', {

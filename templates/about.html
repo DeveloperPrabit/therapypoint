@@ -24,50 +24,219 @@
     }
 
     .about-section {
-      background-color: #fff0f3;
-      padding: 60px 20px;
-      color: #333;
+      padding: 60px 0;
     }
 
     .about-title {
-      font-size: 2.5rem;
-      font-weight: 700;
       text-align: center;
       margin-bottom: 40px;
     }
 
     .about-box {
-      background-color: #fff;
-      padding: 40px;
-      border-radius: 12px;
-      box-shadow: 0 4px 20px rgba(0, 0, 0, 0.05);
       margin-bottom: 40px;
+      padding: 20px;
+      background: #f8f9fa;
+      border-radius: 8px;
     }
 
-    .about-img, .about-video {
-      width: 100%;
-      border-radius: 10px;
-      margin-bottom: 20px;
+    .about-box h4 {
+      text-align: center;
+      margin-bottom: 10px;
     }
 
     .about-subtitle {
-      font-weight: 600;
-      color: #888;
-      font-size: 0.95rem;
-      margin-bottom: 10px;
+      text-align: center;
+      font-style: italic;
+      color: #6c757d;
+      margin-bottom: 20px;
+    }
+
+    .about-description {
+      font-size: 1rem;
+      line-height: 1.6;
+    }
+
+    .about-image {
+      max-width: 100%;
+      height: auto;
+      border-radius: 8px;
+      margin-bottom: 20px;
+    }
+
+    .about-image-left {
+      float: left;
+      margin-right: 20px;
+      max-width: 40%;
+    }
+
+    .about-image-right {
+      float: right;
+      margin-left: 20px;
+      max-width: 40%;
+    }
+
+    .about-image-center {
+      display: block;
+      margin-left: auto;
+      margin-right: auto;
+      max-width: 100%;
+    }
+
+    .about-carousel .carousel-item img {
+      max-height: 500px;
+      object-fit: cover;
+      border-radius: 8px;
+    }
+
+    .carousel-control-prev,
+    .carousel-control-next {
+      width: 5%;
+      background: rgba(0, 0, 0, 0.5);
     }
 
     @media (max-width: 768px) {
       .about-box {
-        padding: 20px;
+        padding: 15px;
+      }
+      .about-image-left,
+      .about-image-right {
+        float: none;
+        margin: 0 auto 20px;
+        max-width: 100%;
       }
     }
+
     {{ custom_css|safe }}
+
+    /* 📍 Locations section styling */
+    .clinic-locations {
+      background-color: #f3e6f9;
+      padding: 30px;
+      border-radius: 8px;
+    }
+    .clinic-locations h4 {
+      color: purple;
+      font-weight: 600;
+      margin-bottom: 20px;
+      text-align: center;
+    }
+    .location-container {
+      display: flex;
+      flex-wrap: wrap;
+      justify-content: space-between;
+      gap: 40px;
+      text-align: left;
+    }
+    .location-block {
+      flex: 1;
+      min-width: 300px;
+    }
+    .location-address {
+      font-weight: bold;
+      color: red;
+      margin-bottom: 10px;
+    }
+    .location-block h5 {
+      font-weight: 600;
+      font-size: 15px;
+      margin-bottom: 8px;
+    }
+    .location-block ul {
+      list-style: none;
+      padding: 0;
+      margin: 0;
+    }
+    .location-block ul li {
+      position: relative;
+      padding-left: 16px;
+      margin-bottom: 5px;
+    }
+    .location-block ul li::before {
+      content: "•";
+      position: absolute;
+      left: 0;
+      color: #555;
+    }
+
+    .page-header {
+      background-color: #e8cffe;
+      padding: 30px 0;
+      text-align: center;
+    }
+    .section-title {
+      font-size: 3rem;
+      font-weight: bold;
+      color: #3c0066;
+    }
   </style>
 </head>
 
 <body>
   {% include 'header.html' %}
+
+ <div class="page-header">
+    <h1 class="section-title animate__animated animate__fadeInDown">About Us</h1>
+  </div>
+   <section class="about-section">
+    <div class="container">
+      <!-- ✅ Static Locations Section -->
+      <div class="clinic-locations animate__animated animate__fadeInUp">
+        <h4>Locate a Therapy Point Clinic in New South Wales</h4>
+        <p>
+          Enjoy seamless access to Therapy Point’s trusted network of therapy clinics,
+          conveniently located across Western Sydney. With established sites in Seven Hills
+          and Gledswood Hills, we’re here to support you and your loved ones every step of the way.
+        </p>
+        <p>
+          Whether you're supporting a loved one or seeking therapy for yourself, our clinics
+          provide a safe, supportive environment with private consultation spaces, advanced equipment,
+          and flexible appointment hours.
+        </p>
+
+        <div class="location-container mt-4">
+          <div class="location-block">
+            <p class="location-address">📍 76 Barbara Blvd, Seven Hills NSW 2147</p>
+            <h5>Easily accessible for families and individuals living in:</h5>
+            <ul>
+              <li>Blacktown</li>
+              <li>Toongabbie</li>
+              <li>Kings Langley</li>
+              <li>Prospect</li>
+              <li>Lalor Park</li>
+              <li>Wentworthville</li>
+              <li>Pendle Hill</li>
+              <li>Bella Vista</li>
+              <li>Doonside</li>
+            </ul>
+          </div>
+          <div class="location-block">
+            <p class="location-address">📍 21B, Level 2, 13 Digitaria Drive, Gledswood Hills NSW 2557</p>
+            <h5>Convenient for those located near:</h5>
+            <ul>
+              <li>Gregory Hills</li>
+              <li>Oran Park</li>
+              <li>Catherine Field</li>
+              <li>Smeaton Grange</li>
+              <li>Currans Hill</li>
+              <li>Harrington Park</li>
+              <li>Narellan</li>
+              <li>Mount Annan</li>
+              <li>Leppington</li>
+            </ul>
+          </div>
+        </div>
+
+        <p class="mt-4">
+          Our mission is to help you live with more confidence and less limitation
+          through personalised therapy plans tailored to your needs. From improving daily routines
+          to enhancing communication skills, Therapy Point is here to support your growth and wellbeing.
+        </p>
+        <p>
+          Begin your journey with Therapy Point today and experience the difference
+          of truly personalised, client-centered support.
+        </p>
+      </div>
+      <!-- ✅ End Static Locations Section -->
 
   <section class="about-section">
     <div class="container">
@@ -76,20 +245,42 @@
         {% for section in sections %}
         <div class="col-md-10 offset-md-1">
           <div class="about-box animate__animated animate__fadeInUp">
-            {% if section.image %}
-              <img src="{{ section.image.url }}" class="about-img" alt="{{ section.title }}">
-            {% elif section.video_url %}
-              <video class="about-video" controls>
-                <source src="{{ section.video_url }}" type="video/mp4">
-                Your browser does not support the video tag.
-              </video>
+            {% if section.title %}
+              <h4>{{ section.title }}</h4>
             {% endif %}
-
-            <h4>{{ section.title }}</h4>
             {% if section.subtitle %}
               <p class="about-subtitle">{{ section.subtitle }}</p>
             {% endif %}
-            <div>{{ section.content|safe }}</div>
+            
+            {% if section.images.count > 1 %}
+              <!-- Carousel for multiple images -->
+              <div id="carousel-{{ section.id }}" class="carousel slide about-carousel" data-bs-ride="carousel">
+                <div class="carousel-inner">
+                  {% for image in section.images.all %}
+                    <div class="carousel-item {% if forloop.first %}active{% endif %}">
+                      <img src="{{ image.image.url }}" class="d-block w-100 about-image" alt="About image {{ forloop.counter }}">
+                    </div>
+                  {% endfor %}
+                </div>
+                <button class="carousel-control-prev" type="button" data-bs-target="#carousel-{{ section.id }}" data-bs-slide="prev">
+                  <span class="carousel-control-prev-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Previous</span>
+                </button>
+                <button class="carousel-control-next" type="button" data-bs-target="#carousel-{{ section.id }}" data-bs-slide="next">
+                  <span class="carousel-control-next-icon" aria-hidden="true"></span>
+                  <span class="visually-hidden">Next</span>
+                </button>
+              </div>
+            {% elif section.images.count == 1 %}
+              <!-- Single image with alignment -->
+              {% for image in section.images.all %}
+                <img src="{{ image.image.url }}" class="about-image about-image-{{ image.alignment }}" alt="{{ section.title|default:'Section image' }}">
+              {% endfor %}
+            {% endif %}
+
+            {% if section.description %}
+              <div class="about-description">{{ section.description|linebreaks }}</div>
+            {% endif %}
           </div>
         </div>
         {% empty %}

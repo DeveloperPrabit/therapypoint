@@ -29,5 +29,5 @@ urlpatterns = [
     path("chatbot-api/", views.chatbot_api, name="chatbot_api"),
     path('therapy-methods/', views.therapy_methods_list, name='therapy_methods_list'),
     path('therapy-methods/<int:pk>/', views.therapy_method_detail, name='therapy_method_detail'),
-    path('footer/', views.footer_view, name='footer_view'),  # New footer view
+    path('footer/', views.footer_view, name='footer_view'),
 ]

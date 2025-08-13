@@ -69,7 +69,87 @@
   object-fit: cover;
 }
 
+/* Existing styles remain unchanged, only adding/modifying the relevant parts */
+.blog-section {
+  padding: 40px 0;
+}
 
+.section-title {
+  color: rgb(227, 73, 73);
+  font-size: 28px;
+  font-weight: bold;
+}
+
+.post-card {
+  border: 1px solid #eee;
+  border-radius: 10px;
+  overflow: hidden;
+  background: #fff;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.05);
+  transition: transform 0.3s ease;
+}
+
+.post-card:hover {
+  transform: translateY(-5px);
+}
+
+.post-img img {
+  width: 100%;
+  height: 200px;
+  object-fit: cover;
+}
+
+.post-body {
+  padding: 15px;
+  position: relative;
+}
+
+.category {
+  display: inline-block;
+  background: #ff9800;
+  color: #fff;
+  padding: 3px 8px;
+  border-radius: 5px;
+  font-size: 12px;
+  margin-bottom: 8px;
+}
+
+.like-btn {
+  position: absolute;
+  top: 15px;
+  right: 15px;
+}
+
+.like-btn button {
+  border: none;
+  background: transparent;
+  font-size: 18px;
+}
+
+.btn-view {
+  display: inline-block;
+  margin-top: 10px;
+  background: #e34949;
+  color: #fff;
+  padding: 5px 12px;
+  border-radius: 5px;
+  font-size: 14px;
+  text-decoration: none;
+}
+
+.btn-view:hover {
+  background: #c93636;
+}
+
+/* Ensure responsiveness */
+@media (max-width: 768px) {
+  .blog-post img {
+    height: 200px; /* Slightly smaller on mobile */
+  }
+  .sidebar-item.recent-posts li img {
+    height: 120px; /* Slightly smaller on mobile */
+  }
+}
 </style>
 </head>
 
@@ -296,63 +376,56 @@
 </section>
 
 
-  <section class="blog-posts">
-    <div class="container">
-      <h3 class="mb-2" style="color: rgb(227, 73, 73); font-size: 30px; font-weight: bold;">RECENT POSTS</h3>
-      <hr>
-      <div class="row">
-        <div class="col-lg-8">
-          <div class="all-blog-posts">
-            <div class="row">
-              {% for post in top_posts|slice:"0:4" %}
-              <div class="col col-lg-6 col-12 pb-2 blog-post">
-                <img src="{{media_url}}{{post.image}}" alt="" class="img-fluid" width="100%">
-                <div class="px-3 py-5 shadow">
-                  <a href="{% url 'post' post.id %}" class="text-decoration-none text-dark mb-3">
-                    <span class="text-white bg-info text-center rounded-3 mt-5" style="padding: 8px;">{{post.category}}</span>
-                    <h5 class="mt-4">{{post.postname}}</h5>
-                  </a>
-                  <form method="post" action="{% url 'increaselikes' post.id %}">
-                    {% csrf_token %}
-                    <button class="float-right small" type="submit" style="border: none; background: transparent; font-size: 25px;"><i class="fa fa-heart text-danger"></i></button>
-                  </form>
-                  <p class="mt-2">{{post.content|slice:"0:3"}}...</p>
-                  <p class="small text-primary">{{post.time}}</p>
-                </div>
-              </div>
-              {% endfor %}
-            </div>
+  <section class="blog-section">
+  <div class="container">
+
+    <!-- RECENT POSTS -->
+    <h3 class="section-title">RECENT POSTS</h3>
+    <hr>
+    <div class="row g-4">
+      {% for post in top_posts|slice:"0:3" %}
+      <div class="col-md-4 col-sm-6">
+        <div class="post-card">
+          <div class="post-img">
+            <img src="{{media_url}}{{post.image}}" alt="{{post.postname}}">
           </div>
-        </div>
-        <div class="col-lg-4">
-          <div class="sidebar">
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="sidebar-item recent-posts">
-                  <div class="sidebar-heading">
-                    <h2 style="color: rgb(240, 124, 78); font-size: 30px; font-weight: bold;">Popular Posts</h2>
-                  </div>
-                  <div class="content">
-                    <ul>
-                      {% for post in recent_posts|slice:"0:3" %}
-                      <li>
-                        <img src="{{media_url}}{{post.image}}" class="img-fluid" alt="" width="100%">
-                        <a href="{% url 'post' post.id %}" class="text-decoration-none text-dark">
-                          <h5>{{post.postname}}</h5>
-                        </a>
-                        <span>{{post.time}}</span>
-                      </li>
-                      {% endfor %}
-                    </ul>
-                  </div>
-                </div>
-              </div>
-            </div>
+          <div class="post-body">
+            <span class="category">{{post.category}}</span>
+            <h5>{{post.postname}}</h5>
+            <p>{{post.content|slice:"0:50"}}...</p>
+            <small class="text-primary">{{post.time}}</small>
+            <form method="post" action="{% url 'increaselikes' post.id %}" class="like-btn">
+              {% csrf_token %}
+              <button type="submit"><i class="fa fa-heart text-danger"></i></button>
+            </form>
           </div>
         </div>
       </div>
+      {% endfor %}
     </div>
-  </section>
+
+    <!-- POPULAR POSTS -->
+    <h3 class="section-title mt-5">POPULAR POSTS</h3>
+    <hr>
+    <div class="row g-4">
+      {% for post in recent_posts|slice:"0:3" %}
+      <div class="col-md-4 col-sm-6">
+        <div class="post-card">
+          <div class="post-img">
+            <img src="{{media_url}}{{post.image}}" alt="{{post.postname}}">
+          </div>
+          <div class="post-body">
+            <h5>{{post.postname}}</h5>
+            <small class="text-primary">{{post.time}}</small>
+            <a href="{% url 'post' post.id %}" class="btn-view">View</a>
+          </div>
+        </div>
+      </div>
+      {% endfor %}
+    </div>
+
+  </div>
+</section>
 
   <!-- Contact Form -->
   {% include 'includes/contact_form_section.html' %}
