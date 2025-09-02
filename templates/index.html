@@ -150,6 +150,34 @@
     height: 120px; /* Slightly smaller on mobile */
   }
 }
+
+.commitment-card {
+    border: 2px solid #2cb84c; /* green border */
+    border-radius: 12px;
+    background: #ffffff;
+    padding-top: 60px; /* spacing for icon */
+    padding: 20px;
+    position: relative;
+    min-height: 230px;
+  }
+  .commitment-card .icon-box {
+    position: absolute;
+    top: -30px;
+    left: 50%;
+    transform: translateX(-50%);
+    background: #ececec;
+    border-radius: 15px;
+    padding: 12px 14px;
+  }
+  .commitment-card .icon-box i {
+    color: #992b9c;
+  }
+  .commitment-title {
+    color: #992b9c;
+    font-weight: 700;
+    margin-top: 15px;
+    text-align: center;
+  }
 </style>
 </head>
 
@@ -328,7 +356,7 @@
   <!--</div>-->
   <!--{% endif %}-->
   <!-- Mission, Quality, Vision Section -->
-<section class="py-5 bg-light">
+ <section class="py-5 bg-light">
   <div class="container">
     <div class="text-center mb-5">
       <h2 class="fw-bold display-5">Our Commitment</h2>
@@ -337,39 +365,39 @@
     <div class="row g-4">
       <!-- Mission -->
       <div class="col-md-4">
-        <div class="card h-100 shadow-lg border-0 rounded-4 glass-card p-4 text-center">
-          <div class="icon-circle mx-auto mb-3">
-            <i class="fa-solid fa-comments fa-2x text-white"></i>
+        <div class="commitment-card">
+          <div class="icon-box">
+            <i class="fa-solid fa-comments fa-2x"></i>
           </div>
-          <h4 class="fw-semibold">Our Mission</h4>
           <p class="text-muted">
-            We are committed to delivering top-tier therapy services with compassion, innovation, and evidence-based practices.
+            Don’t let your thoughts go unspoken! We work to improve and acquire the highest level of communication and individual functional potential that is possible.
           </p>
         </div>
+        <h5 class="commitment-title">Our Mission</h5>
       </div>
       <!-- Quality -->
       <div class="col-md-4">
-        <div class="card h-100 shadow-lg border-0 rounded-4 glass-card p-4 text-center">
-          <div class="icon-circle mx-auto mb-3 bg-primary">
-            <i class="fa-solid fa-thumbs-up fa-2x text-white"></i>
+        <div class="commitment-card">
+          <div class="icon-box">
+            <i class="fa-solid fa-thumbs-up fa-2x"></i>
           </div>
-          <h4 class="fw-semibold">Our Quality</h4>
           <p class="text-muted">
-            Quality is at the core of what we do. Every service is refined to ensure the highest professional standards.
+            We are an officially registered company, and all of our therapists are certified. We assure you that our team is well informed about new technologies introduced and any changes made in the field.
           </p>
         </div>
+        <h5 class="commitment-title">Our Quality</h5>
       </div>
       <!-- Vision -->
       <div class="col-md-4">
-        <div class="card h-100 shadow-lg border-0 rounded-4 glass-card p-4 text-center">
-          <div class="icon-circle mx-auto mb-3 bg-success">
-            <i class="fa-solid fa-user fa-2x text-white"></i>
+        <div class="commitment-card">
+          <div class="icon-box">
+            <i class="fa-solid fa-user fa-2x"></i>
           </div>
-          <h4 class="fw-semibold">Our Vision</h4>
           <p class="text-muted">
-            To empower lives through transformative therapy that creates lasting impact and nurtures well-being.
+            We aim to provide excellent services to improve the quality of life for each participant. We strive to offer a flexible and tailored approach for each individual, family, and supports.
           </p>
         </div>
+        <h5 class="commitment-title">Our Vision</h5>
       </div>
     </div>
   </div>

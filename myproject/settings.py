@@ -197,22 +197,22 @@ CKEDITOR_UPLOAD_PATH = 'uploads/'
 # EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 # DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 
-# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-# EMAIL_HOST = 'mail.techprogramming.org'
-# EMAIL_PORT = 465
-# EMAIL_USE_SSL = True
-# EMAIL_HOST_USER = 'admin@techprogramming.org'
-# EMAIL_HOST_PASSWORD = 'Prabit@123'  # Your email password here
-# DEFAULT_FROM_EMAIL = 'admin@techprogramming.org'
-
 EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
-EMAIL_HOST = 'smtp.gmail.com'
-EMAIL_PORT = 587
-EMAIL_USE_TLS = True
-EMAIL_USE_SSL = False
-EMAIL_HOST_USER = 'prabitjoshi@gmail.com'
-EMAIL_HOST_PASSWORD = 'zmfzqfkfhburuibs'
-DEFAULT_FROM_EMAIL = EMAIL_HOST_USER
+EMAIL_HOST = 'mail.therapypoint.com.au'
+EMAIL_PORT = 465
+EMAIL_USE_SSL = True
+EMAIL_HOST_USER = 'admin@therapypoint.com.au'
+EMAIL_HOST_PASSWORD = 'SEJ8b2vjtkswTdQ'  # Your email password here
+DEFAULT_FROM_EMAIL = 'admin@therapypoint.com.au'
+
+# EMAIL_BACKEND = 'django.core.mail.backends.smtp.EmailBackend'
+# EMAIL_HOST = 'smtp.gmail.com'
+# EMAIL_PORT = 587
+# EMAIL_USE_TLS = True
+# EMAIL_USE_SSL = False
+# EMAIL_HOST_USER = 'prabitjoshi@gmail.com'
+# EMAIL_HOST_PASSWORD = 'zmfzqfkfhburuibs'
+# DEFAULT_FROM_EMAIL = 'info@therapypoint.com.au'
 
 
 

@@ -126,7 +126,7 @@
 
   <div class="container mt-5">
     {% if user.is_authenticated %}
-    <h2 class="mb-4 text-danger">All Posts</h2>
+    {% comment %} <h2 class="mb-4 text-danger">All Posts</h2> {% endcomment %}
     <div class="row row-cols-1 row-cols-md-2 row-cols-lg-3 g-4">
       {% for post in posts|slice:"0:6" %}
       <div class="col">
@@ -151,10 +151,10 @@
         </div>
       </div>
       {% empty %}
-      <p>No posts found.</p>
+      {% comment %} <p>No posts found.</p> {% endcomment %}
       {% endfor %}
     </div>
-    <a href="{% url 'profile' user.id %}" class="view-all-link">View All &gt;&gt;</a>
+    {% comment %} <a href="{% url 'profile' user.id %}" class="view-all-link">View All &gt;&gt;</a> {% endcomment %}
     {% endif %}
   </div>
 

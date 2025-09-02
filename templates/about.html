@@ -21,10 +21,14 @@
   <style>
     body {
       font-family: 'Roboto', sans-serif;
+      margin: 0;
+      padding: 0;
+      width: 100%;
     }
 
     .about-section {
       padding: 60px 0;
+      width: 100%;
     }
 
     .about-title {
@@ -35,8 +39,8 @@
     .about-box {
       margin-bottom: 40px;
       padding: 20px;
-      background: #f8f9fa;
       border-radius: 8px;
+      width: 100%;
     }
 
     .about-box h4 {
@@ -52,7 +56,7 @@
     }
 
     .about-description {
-      font-size: 1rem;
+      font-size: 1.5rem;
       line-height: 1.6;
     }
 
@@ -110,47 +114,57 @@
 
     /* 📍 Locations section styling */
     .clinic-locations {
-      background-color: #f3e6f9;
       padding: 30px;
       border-radius: 8px;
+      width: 100%;
     }
+
     .clinic-locations h4 {
       color: purple;
       font-weight: 600;
       margin-bottom: 20px;
       text-align: center;
     }
+
     .location-container {
       display: flex;
       flex-wrap: wrap;
       justify-content: space-between;
       gap: 40px;
       text-align: left;
+      width: 100%;
     }
+
     .location-block {
       flex: 1;
       min-width: 300px;
+      padding-right: 30px; /* Added padding to the right side */
     }
+
     .location-address {
       font-weight: bold;
       color: red;
       margin-bottom: 10px;
     }
+
     .location-block h5 {
       font-weight: 600;
       font-size: 15px;
       margin-bottom: 8px;
     }
+
     .location-block ul {
       list-style: none;
       padding: 0;
       margin: 0;
     }
+
     .location-block ul li {
       position: relative;
       padding-left: 16px;
       margin-bottom: 5px;
     }
+
     .location-block ul li::before {
       content: "•";
       position: absolute;
@@ -162,11 +176,18 @@
       background-color: #e8cffe;
       padding: 30px 0;
       text-align: center;
+      width: 100%;
     }
+
     .section-title {
       font-size: 3rem;
       font-weight: bold;
       color: #3c0066;
+    }
+
+    .container {
+      max-width: 100%;
+      padding: 0 15px;
     }
   </style>
 </head>
@@ -174,10 +195,11 @@
 <body>
   {% include 'header.html' %}
 
- <div class="page-header">
+  <div class="page-header">
     <h1 class="section-title animate__animated animate__fadeInDown">About Us</h1>
   </div>
-   <section class="about-section">
+
+  <section class="about-section">
     <div class="container">
       <!-- ✅ Static Locations Section -->
       <div class="clinic-locations animate__animated animate__fadeInUp">
@@ -237,19 +259,21 @@
         </p>
       </div>
       <!-- ✅ End Static Locations Section -->
+    </div>
+  </section>
 
   <section class="about-section">
     <div class="container">
-      <h2 class="about-title animate__animated animate__fadeInDown">About Us</h2>
+      <h2 class="about-title animate__animated animate__fadeInDown" style="color:purple;">About Us</h2>
       <div class="row">
         {% for section in sections %}
-        <div class="col-md-10 offset-md-1">
+        <div class="col-12">
           <div class="about-box animate__animated animate__fadeInUp">
             {% if section.title %}
-              <h4>{{ section.title }}</h4>
+              <h4 style="color: purple; font-size: 30px;">{{ section.title }}</h4>
             {% endif %}
             {% if section.subtitle %}
-              <p class="about-subtitle">{{ section.subtitle }}</p>
+              <p class="about-subtitle" style="color:green; font-size: 28px;">{{ section.subtitle }}</p>
             {% endif %}
             
             {% if section.images.count > 1 %}
@@ -289,6 +313,8 @@
       </div>
     </div>
   </section>
+
+  {% include 'includes/contact_form_section.html' %}
 
   {% include 'footer.html' %}
 

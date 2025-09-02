@@ -265,9 +265,9 @@ footer {
         {% for location in footer.get_locations %}
           <a href="{{ location.1 }}">{{ location.0 }}</a>
         {% empty %}
-          <a href="#">Liverpool</a>
+          {% comment %} <a href="#">Liverpool</a>
           <a href="#">Casula</a>
-          <a href="#">Chipping Norton</a>
+          <a href="#">Chipping Norton</a> {% endcomment %}
         {% endfor %}
       {% else %}
         <a href="#">Seven Hills</a>
